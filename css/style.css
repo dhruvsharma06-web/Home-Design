@@ -212,3 +212,56 @@ button { font: inherit; color: inherit; cursor: pointer; }
   .joy { bottom: 130px; left: 18px; }
   .rotate { bottom: 130px; left: auto; right: 16px; transform: none; }
 }
+
+/* ======================= v3: live exterior + panels ======================= */
+.view3d { position: fixed; inset: 0; z-index: 0; }
+.veil { position: fixed; z-index: 50; }
+.land { position: fixed; inset: 0; z-index: 2; pointer-events: none; }
+.land > * { pointer-events: auto; }
+.land .hero-hint { pointer-events: none; }
+body.inside .land, body.busy .land { opacity: 0; pointer-events: none; transition: opacity .4s; }
+#dashBtn { position: absolute; right: 24px; top: 20px; }
+body.lvl .hero-card { opacity: 1; transform: none; pointer-events: auto; }
+.fv { opacity: 0; visibility: hidden; background: none; transform: none; }
+body.inside .fv { opacity: 1; visibility: visible; transition: opacity .6s; }
+.fv, .fv::after { pointer-events: none; } .fv > * { pointer-events: auto; } .fv .stage-hint, .fv .room-card { pointer-events: none; }
+body.walk .fv-panel { opacity: 0; transform: translateX(-30px); pointer-events: none; }
+.glass, .gcard { background: rgba(24, 22, 19, .55); backdrop-filter: blur(18px) saturate(1.2); border: 1px solid rgba(255,255,255,.16); }
+.side { position: fixed; z-index: 20; right: 24px; top: 92px; bottom: 24px; width: 340px; overflow: auto; padding: 22px; color: #fff; }
+.side h3 { font-size: 26px; font-weight: 400; margin-bottom: 14px; }
+.x { position: absolute; right: 12px; top: 8px; border: 0; background: none; color: #fff; font-size: 24px; }
+.pills { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+.pills button { border: 1px solid rgba(255,255,255,.2); background: rgba(255,255,255,.06); padding: 6px 10px; font-size: 11px; letter-spacing: .08em; text-transform: capitalize; }
+.pills button.on, .pills button:hover { background: rgba(255,255,255,.9); color: var(--ink); }
+.crow { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; font-size: 13px; }
+.crow input { width: 44px; height: 26px; border: 0; background: none; cursor: pointer; }
+.chip.wide { width: 100%; margin-top: 8px; } .fine { font-size: 12px; line-height: 1.6; color: rgba(255,255,255,.7); }
+.selbar { position: fixed; z-index: 15; left: 50%; bottom: 70px; transform: translateX(-50%); display: flex; gap: 8px; align-items: center; padding: 8px 10px; background: rgba(24,22,19,.7); backdrop-filter: blur(14px); border: 1px solid rgba(255,255,255,.16); }
+.selbar > span:first-child { font-size: 11px; letter-spacing: .2em; text-transform: uppercase; padding: 0 6px; }
+.sw-row { display: flex; gap: 4px; } .sw-row i { width: 20px; height: 20px; cursor: pointer; border: 1px solid rgba(255,255,255,.4); }
+.liftchip { position: fixed; z-index: 15; right: 76px; top: 50%; }
+.fv-rail.pulse .n { animation: pulse 1s 3; }
+.ai { display: flex; flex-direction: column; }
+.ai-log { flex: 1; overflow: auto; display: flex; flex-direction: column; gap: 8px; margin: 6px 0 10px; }
+.msg { padding: 9px 12px; font-size: 13.5px; line-height: 1.55; max-width: 92%; }
+.msg.ai { background: rgba(255,255,255,.1); } .msg.me { background: var(--marble); color: var(--ink); align-self: flex-end; }
+.ai-form { display: flex; gap: 6px; } .ai input { flex: 1; min-width: 0; padding: 10px; background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2); color: #fff; font: inherit; font-size: 13px; }
+.ai-key input { width: 100%; margin-bottom: 4px; }
+.linkbtn { border: 0; background: none; color: rgba(255,255,255,.55); font-size: 11px; margin-top: 8px; text-decoration: underline; }
+.dash { position: fixed; inset: 0; z-index: 30; display: grid; place-items: center; background: rgba(8,9,12,.35); backdrop-filter: blur(6px); }
+.dash-in { position: relative; width: min(1100px, calc(100% - 32px)); max-height: calc(100% - 40px); overflow: auto; padding: 32px; background: rgba(24,22,19,.5); backdrop-filter: blur(24px) saturate(1.3); border: 1px solid rgba(255,255,255,.18); color: #fff; }
+.dash h2 { font-size: clamp(26px, 3vw, 40px); font-weight: 400; margin: 4px 0 22px; }
+.dgrid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin-bottom: 20px; }
+.dgrid.lv { grid-template-columns: repeat(5, 1fr); }
+.gcard { padding: 14px; text-align: left; color: #fff; } .gcard b { display: block; font-family: var(--serif); font-size: 26px; font-weight: 400; } .gcard span { font-size: 11.5px; color: rgba(255,255,255,.75); line-height: 1.5; }
+.dgrid.lv .gcard i { font-style: normal; font-family: var(--serif); font-size: 30px; opacity: .6; } .dgrid.lv .gcard b { font-size: 20px; } .dgrid.lv .gcard em { display: block; margin-top: 8px; font-style: normal; font-size: 10px; letter-spacing: .2em; text-transform: uppercase; color: var(--marble); }
+.dgrid.lv .gcard:hover { background: rgba(255,255,255,.14); }
+.dcols { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; } .dcols ul { margin: 0; padding-left: 18px; font-size: 13px; line-height: 1.9; }
+.mrow { display: flex; gap: 10px; align-items: center; font-size: 13px; padding: 4px 0; } .mrow i { width: 22px; height: 22px; border: 1px solid rgba(255,255,255,.3); }
+.lift { position: fixed; inset: 0; z-index: 40; pointer-events: none; }
+.lift i { position: absolute; top: 0; bottom: 0; width: 50%; background: linear-gradient(90deg, #b9bcbf, #e2e4e6 40%, #a9acaf); transition: transform .8s cubic-bezier(.6,0,.2,1); }
+.lift .l { left: 0; transform: translateX(-101%); } .lift .r { right: 0; transform: translateX(101%); }
+.lift.shut i { transform: none; }
+.lift-ind { position: absolute; left: 50%; top: 22%; transform: translateX(-50%); text-align: center; color: #2b2a28; opacity: 0; transition: opacity .3s .5s; }
+.lift.shut .lift-ind { opacity: 1; } .lift-ind span { display: block; font-family: var(--serif); font-size: 64px; } .lift-ind small { letter-spacing: .25em; text-transform: uppercase; font-size: 11px; }
+@media (max-width: 900px) { .side { left: 8px; right: 8px; width: auto; top: auto; height: 62vh; } .dgrid { grid-template-columns: repeat(2, 1fr); } .dgrid.lv, .dcols { grid-template-columns: 1fr 1fr; } .selbar { flex-wrap: wrap; bottom: 120px; width: calc(100% - 24px); } #dashBtn { right: 12px; top: 64px; } }
