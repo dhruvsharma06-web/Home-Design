@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>B4 · Godrej Hillview · Khopoli</title>
+  <meta name="description" content="B4 at Godrej Hillview, Khopoli. Step inside every floor." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="js/palette.js"></script>
+  <script type="importmap">
+  { "imports": { "three": "https://unpkg.com/three@0.160.0/build/three.module.js", "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/" } }
+  </script>
+</head>
+<body>
+
+  <!-- ===================== LANDING: only the house ===================== -->
+  <main class="hero" id="hero">
+    <svg class="hero-svg" id="heroSvg" viewBox="0 0 1536 1024" preserveAspectRatio="xMidYMid slice" aria-label="B4, Godrej Hillview, Khopoli">
+      <defs>
+        <mask id="spot"><rect width="1536" height="1024" fill="white" /><polygon id="spotHole" points="" fill="black" /></mask>
+        <radialGradient id="vig" cx="50%" cy="48%" r="75%"><stop offset="45%" stop-color="#000" stop-opacity="0" /><stop offset="100%" stop-color="#05070a" stop-opacity=".78" /></radialGradient>
+        <linearGradient id="grade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1c2a44" stop-opacity=".42" /><stop offset=".55" stop-color="#2a2014" stop-opacity=".12" /><stop offset="1" stop-color="#0a0806" stop-opacity=".5" /></linearGradient>
+      </defs>
+      <image href="assets/exterior.jpg" width="1536" height="1024" class="hero-img" />
+      <rect width="1536" height="1024" fill="url(#grade)" pointer-events="none" />
+      <rect width="1536" height="1024" fill="url(#vig)" pointer-events="none" />
+      <rect class="dim" width="1536" height="1024" mask="url(#spot)" />
+      <g id="floorHits"></g>
+      <g class="leader"><line id="leaderLine" /><circle id="leaderDot" r="4" /></g>
+    </svg>
+
+    <div class="mark"><span class="mono">B4</span><span class="mark-name">Godrej Hillview · Khopoli</span></div>
+
+    <div class="hero-card" id="heroCard" aria-live="polite">
+      <div class="hc-level"><span class="hc-label">Level</span><span class="hc-num" id="hcNum">1</span></div>
+      <div class="hc-body">
+        <div class="hc-title" id="hcTitle">First Floor</div>
+        <div class="hc-tag" id="hcTag">Residence</div>
+        <div class="hc-cta">Step inside →</div>
+      </div>
+    </div>
+
+    <ol class="floor-rail" id="floorRail" aria-label="Levels"></ol>
+    <div class="hero-hint"><span class="diamond"></span><span id="hintText">Hover a level · click to step inside</span></div>
+  </main>
+
+  <!-- ===================== INSIDE ===================== -->
+  <section class="fv" id="floorView" role="dialog" aria-modal="true" aria-labelledby="exTitle" aria-hidden="true">
+    <div class="view3d" id="view3d"></div>
+    <div class="veil" id="veil"><span>Preparing the house…</span></div>
+
+    <header class="fv-top">
+      <button class="chip back" id="fvBack">← <span id="backLabel">The House</span></button>
+      <div class="fv-title">
+        <span class="fv-num" id="fvNum">1</span>
+        <div><h2 id="exTitle">First Floor</h2><p id="exTag"></p></div>
+      </div>
+      <div class="fv-controls">
+        <button class="chip primary" id="walkBtn">Walk inside</button>
+        <div class="seg" id="timeSeg"><button data-n="0" class="on">Day</button><button data-n="1">Evening</button></div>
+        <div class="seg" id="qSeg" title="Rendering quality"><button data-q="low">Low</button><button data-q="med">Med</button><button data-q="high">High</button></div>
+        <button class="chip" id="resetBtn" title="Put all furniture back">Reset furniture</button>
+      </div>
+    </header>
+
+    <aside class="fv-panel" id="fvPanel">
+      <p class="fv-summary" id="exSummary"></p>
+      <dl class="ex-stats" id="exStats"></dl>
+      <p class="list-title">Step into a room</p>
+      <ul class="room-list" id="roomList"></ul>
+    </aside>
+
+    <div class="room-card" id="roomCard" hidden>
+      <p class="eyebrow" id="rcFloor"></p>
+      <h3 id="rcName"></h3>
+      <p class="rc-size" id="rcSize"></p>
+      <p class="rc-notes" id="rcNotes"></p>
+    </div>
+
+    <nav class="fv-rail" id="fvRail" aria-label="Switch level"></nav>
+
+    <div class="mini" id="mini" hidden><div id="miniPlan"></div></div>
+    <button class="chip rotate" id="rotBtn" hidden>⟳ Rotate</button>
+    <div class="joy" id="joy" hidden><i></i></div>
+    <div class="stage-hint" id="stageHint"></div>
+  </section>
+
+  <div class="fatal" id="fatal" hidden>The 3D engine could not load. Check your internet connection and reload.</div>
+
+  <script type="module">
+    try {
+      const THREE = await import('three');
+      const [a, b, c, d, e, f, g, h] = await Promise.all([
+        import('three/addons/loaders/RGBELoader.js'), import('three/addons/postprocessing/EffectComposer.js'), import('three/addons/postprocessing/RenderPass.js'),
+        import('three/addons/postprocessing/UnrealBloomPass.js'), import('three/addons/postprocessing/GTAOPass.js'), import('three/addons/postprocessing/OutputPass.js'),
+        import('three/addons/geometries/RoundedBoxGeometry.js'), import('three/addons/environments/RoomEnvironment.js'),
+      ]);
+      window.THREE = THREE;
+      window.ADDONS = { RGBELoader: a.RGBELoader, EffectComposer: b.EffectComposer, RenderPass: c.RenderPass, UnrealBloomPass: d.UnrealBloomPass, GTAOPass: e.GTAOPass, OutputPass: f.OutputPass, RoundedBoxGeometry: g.RoundedBoxGeometry, RoomEnvironment: h.RoomEnvironment };
+    } catch (err) { console.error(err); window.ADDONS = {}; }
+    for (const s of ['js/data.js', 'js/plan2d.js', 'js/world.js', 'js/app.js']) await new Promise((r) => { const el = document.createElement('script'); el.src = s; el.onload = r; el.onerror = r; document.body.appendChild(el); });
+  </script>
+</body>
+</html>
