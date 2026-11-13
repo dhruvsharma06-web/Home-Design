@@ -88,12 +88,9 @@
     j.addEventListener('pointerdown', (e) => { id = e.pointerId; j.setPointerCapture(id); const r = j.getBoundingClientRect(); cx = r.left + r.width / 2; cy = r.top + r.height / 2; set(e.clientX - cx, e.clientY - cy); }); j.addEventListener('pointermove', (e) => e.pointerId === id && set(e.clientX - cx, e.clientY - cy)); const end = () => { id = null; set(0, 0); }; j.addEventListener('pointerup', end); j.addEventListener('pointercancel', end); })();
 
   /* ---------- AI guide (Gemini, with tools that drive the tour) ---------- */
-  const KEY = 'b4-gemini-key', log = $('#aiLog'), hist = []; let model = null;
-  const getKey = () => localStorage.getItem(KEY) || window.B4_GEMINI_KEY || '';
+  const log = $('#aiLog'), hist = [];
   const say = (who, t) => { const d = document.createElement('div'); d.className = 'msg ' + who; d.textContent = t; log.appendChild(d); log.scrollTop = 1e6; return d; };
-  const keyUI = () => { const has = !!getKey(); $('#aiKeyBox').hidden = has; $('#aiForm').hidden = !has; $('#aiForget').hidden = !has; if (has && !log.children.length) say('ai', 'Hello. I can walk you through B4, explain any room, switch day and evening, and change colours, materials or furniture. Where shall we start?'); };
-  $('#aiSave').addEventListener('click', () => { const v = $('#aiKey').value.trim(); if (v) { localStorage.setItem(KEY, v); $('#aiKey').value = ''; keyUI(); } });
-  $('#aiForget').addEventListener('click', () => { localStorage.removeItem(KEY); model = null; keyUI(); }); keyUI();
+  if (!log.children.length) say('ai', 'Hello! I can walk you through B4, explain any room, switch day and evening, and change colours, materials or furniture. Where shall we start?');
   const P = (o, req) => ({ type: 'OBJECT', properties: o, required: req || [] }), S = (d, e) => ({ type: 'STRING', description: d, ...(e ? { enum: e } : {}) });
   const TOOLS = [{ functionDeclarations: [
     { name: 'go_to', description: 'Move the visitor. Give a level, and optionally a room id on that level to stand inside it. view "dollhouse" shows the level from above; "exterior" shows the whole house.', parameters: P({ level: S('level id', ['g', 'f1', 'f2', 'f3', 't']), room: S('room id on that level'), view: S('view', ['walk', 'dollhouse', 'exterior']) }) },
@@ -111,12 +108,27 @@
     if (name === 'edit_objects') { if (!current) return { ok: false, error: 'enter a level first' }; if (a.action === 'add') return { ok: !!world.addItem(a.type, a.room) }; if (a.action === 'remove') return { ok: true, removed: world.removeItems(a.type, a.room) }; const l = world.find(a.type, a.room); world.tintItems(a.color || '#D8CFC2', l); return { ok: true, changed: l.length }; }
     return { ok: false };
   }
-  async function api(path, bodyObj) { const r = await fetch('https://generativelanguage.googleapis.com/v1beta/' + path, { method: bodyObj ? 'POST' : 'GET', headers: { 'x-goog-api-key': getKey(), 'Content-Type': 'application/json' }, body: bodyObj && JSON.stringify(bodyObj) }); const j = await r.json(); if (!r.ok) throw new Error((j.error && j.error.message) || r.status); return j; }
-  async function pickModel() { if (model) return model; try { const l = (await api('models?pageSize=200')).models || []; const c = l.filter((m) => /generateContent/.test((m.supportedGenerationMethods || []).join()) && /gemini-[\d.]+-flash$/.test(m.name)).map((m) => m.name.replace('models/', '')).sort((a, b) => parseFloat(b.split('-')[1]) - parseFloat(a.split('-')[1])); model = c[0] || 'gemini-2.0-flash'; } catch (e) { model = 'gemini-2.0-flash'; } return model; }
+  async function askAI(payload) {
+    try {
+      const r = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+      if (r.ok) return await r.json();
+    } catch (e) {}
+    const key = localStorage.getItem('b4-gemini-key') || window.B4_GEMINI_KEY || '';
+    const url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent';
+    const r = await fetch(url, { method: 'POST', headers: { 'x-goog-api-key': key, 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+    const j = await r.json();
+    if (!r.ok) throw new Error((j.error && j.error.message) || r.status);
+    return j;
+  }
   $('#aiForm').addEventListener('submit', async (e) => { e.preventDefault(); const t = $('#aiIn').value.trim(); if (!t) return; $('#aiIn').value = ''; say('me', t); hist.push({ role: 'user', parts: [{ text: t }] }); const wait1 = say('ai', '…');
-    try { const md = await pickModel(); for (let i = 0; i < 6; i++) { const res = await api(`models/${md}:generateContent`, { systemInstruction: { parts: [{ text: sys() }] }, contents: hist, tools: TOOLS }); const c = res.candidates && res.candidates[0] && res.candidates[0].content; if (!c) throw new Error('No reply'); hist.push(c);
+    try {
+      for (let i = 0; i < 6; i++) {
+        const res = await askAI({ systemInstruction: { parts: [{ text: sys() }] }, contents: hist, tools: TOOLS });
+        const c = res.candidates && res.candidates[0] && res.candidates[0].content; if (!c) throw new Error('No reply'); hist.push(c);
         const calls = (c.parts || []).filter((p) => p.functionCall); if (!calls.length) { wait1.textContent = (c.parts || []).map((p) => p.text || '').join('').trim() || 'Done.'; break; }
-        const out = []; for (const p of calls) out.push({ functionResponse: { name: p.functionCall.name, response: await run(p.functionCall.name, p.functionCall.args || {}) } }); hist.push({ role: 'user', parts: out }); } }
+        const out = []; for (const p of calls) out.push({ functionResponse: { name: p.functionCall.name, response: await run(p.functionCall.name, p.functionCall.args || {}) } }); hist.push({ role: 'user', parts: out });
+      }
+    }
     catch (err) { wait1.textContent = 'I could not reach Gemini: ' + err.message; } log.scrollTop = 1e6; });
 
   /* ---------- start ---------- */
