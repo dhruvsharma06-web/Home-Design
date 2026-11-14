@@ -47,22 +47,19 @@
       new T.TextureLoader().load('assets/env/hills.jpg', (t) => { t.mapping = T.EquirectangularReflectionMapping; t.colorSpace = T.SRGBColorSpace; this.sky = t; this._bg(); }, undefined, () => {});
     }
     _backdrop() {
-      // scenery from the original exterior photo: the club + road once, behind the house (south, the club side);
-      // everywhere else just sky, hills and fields
-      const TL = new T.TextureLoader(), mk = (f, wrap, rep) => { const t = TL.load(f); t.colorSpace = T.SRGBColorSpace; t.wrapS = wrap; t.repeat.set(rep, 1); t.anisotropy = 8; if (rep < 0) t.offset.x = 1; return t; };
-      this.bdTex = { day: [mk('assets/env/simple_day.jpg', T.MirroredRepeatWrapping, -12), mk('assets/env/hero_day.png', T.ClampToEdgeWrapping, -1)], evening: [mk('assets/env/simple_eve.jpg', T.MirroredRepeatWrapping, -12), mk('assets/env/hero_eve.png', T.ClampToEdgeWrapping, -1)] };
-      const H = 171.8, g = new T.Group(); g.position.set(0, 30.5, 1.25); g.renderOrder = -1;
-      const a = new T.Mesh(new T.CylinderGeometry(300, 300, H, 128, 1, true), new T.MeshBasicMaterial({ map: this.bdTex.day[0], side: T.BackSide, fog: false, depthWrite: false }));
-      const ARC = 0.6244, b = new T.Mesh(new T.CylinderGeometry(296, 296, H, 64, 1, true, -ARC / 2, ARC), new T.MeshBasicMaterial({ map: this.bdTex.day[1], side: T.BackSide, fog: false, depthWrite: false, transparent: true }));
-      a.renderOrder = -2; b.renderOrder = -1; g.add(a, b); this.bdParts = [a, b]; this.backdrop = g; this.scene.add(g);
-      this.skyCol = { day: '#c9d5e9', evening: '#394468', dusk: '#394468' }; this.fieldCol = { day: '#51532f', evening: '#1d201a' };
+      // gradient sky dome (day / evening); the photo backdrop is no longer used
+      const mat = new T.ShaderMaterial({ side: T.BackSide, depthWrite: false, fog: false, uniforms: { top: { value: new T.Color('#6F9BC8') }, hor: { value: new T.Color('#D3DDE1') }, sun: { value: new T.Vector3(0.6, 0.35, 0.7).normalize() }, glow: { value: new T.Color('#FFF1D6') } },
+        vertexShader: 'varying vec3 vP; void main(){ vP = normalize(position); gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+        fragmentShader: 'uniform vec3 top; uniform vec3 hor; uniform vec3 sun; uniform vec3 glow; varying vec3 vP; void main(){ float h = clamp(vP.y, 0.0, 1.0); vec3 c = mix(hor, top, pow(h, 0.5)); float s = max(dot(normalize(vP), sun), 0.0); c += glow * pow(s, 24.0) * 0.35; gl_FragColor = vec4(c, 1.0);' + String.fromCharCode(10) + '#include <tonemapping_fragment>' + String.fromCharCode(10) + '#include <colorspace_fragment>' + String.fromCharCode(10) + '}' });
+      this.sky3d = new T.Mesh(new T.SphereGeometry(1000, 48, 24), mat); this.sky3d.renderOrder = -3; this.scene.add(this.sky3d);
+      this.skyLook = { day: ['#6F9BC8', '#D3DDE1', '#C9D4D8'], evening: ['#060A14', '#232C40', '#1B2232'], dusk: ['#2C3A5A', '#C79A7E', '#5B5560'] };
     }
     _bg() {
       const L = LOOKS[this.look];
-      const out = this.mode !== 'doll'; if (this.backdrop) { this.backdrop.visible = false; const tx = this.bdTex[this.look === 'day' ? 'day' : 'evening']; this.bdParts[0].material.map = tx[0]; this.bdParts[1].material.map = tx[1]; if (this.site && this.site.groundMat) this.site.groundMat.color.set(this.look === 'day' ? '#98AA6C' : '#3C4636'); this.backdrop.position.y = 30.5 + (this.mode === 'walk' && this.o ? this.o.y * 0.0 : 0); }
-      if (out) { this.scene.background = new T.Color(this.skyCol[this.look]); this.scene.backgroundIntensity = 1; }
+      const out = this.mode !== 'doll', SL = this.skyLook[this.look] || this.skyLook.day; if (this.sky3d) { this.sky3d.visible = out; this.sky3d.material.uniforms.top.value.set(SL[0]); this.sky3d.material.uniforms.hor.value.set(SL[1]); this.sky3d.material.uniforms.glow.value.set(this.look === 'day' ? '#FFF1D6' : '#000000'); } if (false && this.backdrop) { this.backdrop.visible = false; const tx = this.bdTex[this.look === 'day' ? 'day' : 'evening']; this.bdParts[0].material.map = tx[0]; this.bdParts[1].material.map = tx[1]; if (this.site && this.site.groundMat) this.site.groundMat.color.set(this.look === 'day' ? '#98AA6C' : '#3C4636'); this.backdrop.position.y = 30.5 + (this.mode === 'walk' && this.o ? this.o.y * 0.0 : 0); }
+      if (out) { this.scene.background = new T.Color(SL[1]); this.scene.backgroundIntensity = 1; }
       else { this.scene.background = new T.Color(this.mode === 'doll' ? '#0b0d11' : L.fog); this.scene.backgroundIntensity = 1; }
-      this.scene.fog.color.set(this.look === 'day' ? '#6E7C52' : '#1C2121'); this.scene.fog.near = this.mode === 'doll' ? 500 : 62; this.scene.fog.far = this.mode === 'doll' ? 2000 : 128;
+      this.scene.fog.color.set(SL[2]); this.scene.fog.near = this.mode === 'doll' ? 3000 : 45; this.scene.fog.far = this.mode === 'doll' ? 4000 : 1050;
     }
     _composer(w, h) {
       this.composer = null; this.ao = null; this.bloom = null;

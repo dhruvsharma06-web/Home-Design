@@ -388,7 +388,7 @@
     else if (t === 'g') glaze(0, hh, 1.5);
     else if (t === 'gp') { g.add(box(len, H, 0.012, m.glass, 0, 0, 0, false)); g.add(box(len, 0.03, 0.04, m.frame, 0, H - 0.03, 0, false)); }
     else if (t === 'win') { const s = o.s || 0.9, hd = o.h || 2.4; g.add(box(len, s, th, m.wall, 0, 0, 0)); g.add(box(len, H - hd, th, m.wall, 0, hd, 0)); glaze(s, hd - s, 1.3); g.add(box(len, 0.03, th + 0.06, m.marble, 0, s - 0.03, 0, false)); }
-    else if (t === 'd') { g.add(box(len, H - 2.15, th, m.wall, 0, 2.15, 0)); if (len < 1.3 && floor.id !== 'g' && !(floor.openAir && floor.id === 't' && x1 === 1.38)) { for (const s of [-1, 1]) g.add(box(0.05, 2.15, th + 0.04, m.wood, s * (len / 2 - 0.025), 0, 0, false)); g.add(box(len, 0.05, th + 0.04, m.wood, 0, 2.1, 0, false));
+    else if (t === 'd') { g.add(box(len, H - 2.15, th, m.wall, 0, 2.15, 0)); if (len < 1.3 && floor.id !== 'g' && !(floor.openAir && floor.id === 't' && x1 === 1.38) && !(y1 === y2 && Math.abs(y1 - 13.85) < 0.01)) { for (const s of [-1, 1]) g.add(box(0.05, 2.15, th + 0.04, m.wood, s * (len / 2 - 0.025), 0, 0, false)); g.add(box(len, 0.05, th + 0.04, m.wood, 0, 2.1, 0, false));
       const pv = new T.Group(), lw = len - 0.12; pv.position.set(-len / 2 + 0.06, 0, 0); pv.userData.keep = true;
       pv.add(box(lw, 2.08, 0.04, m.wood, lw / 2, 0.01, 0)); for (const s of [-1, 1]) pv.add(box(0.02, 0.02, 0.14, m.brass, lw - 0.08, 1.02, s * 0.04, false));
       const openA = Math.PI / 2 * 0.92; pv.rotation.y = openA; pv.userData.door = { open: true, openA, target: openA, seg: { x1, y1, x2, y2, r: 0.05 } }; g.add(pv); if (DOORS) DOORS.push(pv); } }
@@ -509,7 +509,7 @@
     const m = mats(), g = new T.Group(), s = new T.Group(); g.add(s);
     const rnd = (() => { let a = 1337; return () => ((a = (a * 16807) % 2147483647) / 2147483647); })();
     const gm = m.grass.clone(); gm.color = new T.Color('#8EA070'); gm.userData = { tile: 2.4 };
-    const ground = new T.Mesh(new T.CircleGeometry(420, 96), gm); { const uv = ground.geometry.attributes.uv; for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * 300, uv.getY(i) * 300); }
+    const ground = new T.Mesh(new T.CircleGeometry(64, 96), gm); { const uv = ground.geometry.attributes.uv; for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * 46, uv.getY(i) * 46); }
     ground.rotation.x = -Math.PI / 2; ground.position.set(4.9, -0.06, 9.5); ground.receiveShadow = true; ground.userData.keep = true; g.add(ground);
     const sync = () => { gm.map = m.grass.map; gm.normalMap = m.grass.normalMap; gm.needsUpdate = true; }; setTimeout(sync, 1500); setTimeout(sync, 6000);
     // road + footpath on the north
@@ -548,7 +548,21 @@
       for (let i = 0; i < seg; i++) { const k = i * 3; idx.push(k, k + 1, k + 3, k + 1, k + 4, k + 3, k + 1, k + 2, k + 4, k + 2, k + 5, k + 4); }
       const geo = new T.BufferGeometry(); geo.setAttribute('position', new T.Float32BufferAttribute(pos, 3)); geo.setIndex(idx); geo.computeVertexNormals(); const me = new T.Mesh(geo, mat); me.position.set(4.9, 0, 9.5); me.userData.keep = true; g.add(me); };
 
-    ridge(300, 62, m.hill, 3); ridge(390, 105, m.hill2, 11);
+    // Khopoli hills: a smooth terrain ring rising from the valley floor, forest-mottled, fading into haze with distance
+    const terrain = (Rin, Rout, rings, segs) => {
+      const pos = [], col = [], idx = [], c = new T.Color(), lo = new T.Color('#4A5E35'), mid = new T.Color('#57733F'), hi = new T.Color('#7C8F62'), rock = new T.Color('#7E7A68');
+      const fbm = (x, z, o0) => { let v = 0, a = 1, f = 1, t = 0; for (let o = 0; o < 5; o++) { v += a * Math.sin(x * f * 0.0105 + o * 1.7 + o0) * Math.cos(z * f * 0.0093 - o * 2.3 + o0); t += a; a *= 0.5; f *= 2.07; } return v / t; };
+      for (let i = 0; i <= rings; i++) { const r = Rin + (Rout - Rin) * Math.pow(i / rings, 1.25);
+        for (let j = 0; j <= segs; j++) { const th = (j / segs) * Math.PI * 2, x = Math.cos(th) * r, z = Math.sin(th) * r;
+          const ramp = Math.min(1, Math.max(0, (r - Rin) / (Rout * 0.55))), n = fbm(x, z, 0) * 0.5 + 0.5, ridge = 1 - Math.abs(fbm(x * 0.7, z * 0.7, 3));
+          const h = -0.3 + ramp * ramp * (25 + 210 * Math.pow(n, 1.6) * (0.55 + 0.45 * ridge));
+          pos.push(x, h, z);
+          const m2 = fbm(x * 6, z * 6, 9) * 0.5 + 0.5, k = Math.min(1, h / 160);
+          c.copy(lo).lerp(mid, m2).lerp(hi, k * 0.7); if (k > 0.75) c.lerp(rock, (k - 0.75) * 1.4); col.push(c.r, c.g, c.b); } }
+      for (let i = 0; i < rings; i++) for (let j = 0; j < segs; j++) { const a = i * (segs + 1) + j, b = a + segs + 1; idx.push(a, a + 1, b, b, a + 1, b + 1); }
+      const geo = new T.BufferGeometry(); geo.setAttribute('position', new T.Float32BufferAttribute(pos, 3)); geo.setAttribute('color', new T.Float32BufferAttribute(col, 3)); geo.setIndex(idx); geo.computeVertexNormals();
+      const me = new T.Mesh(geo, new T.MeshStandardMaterial({ vertexColors: true, roughness: 1 })); me.position.set(4.9, 0, 9.5); me.userData.keep = true; me.receiveShadow = true; g.add(me); };
+    terrain(58, 900, 84, 288);
     // plot seen from above (used when you are on an upper floor)
     const lite = new T.Group(); lite.userData.keep = true;
     lite.add(box(9.75, 0.05, 5.75, m.limeGrey, 4.875, -0.03, 2.875, false)); lite.add(box(9.75, 0.05, 13.25, m.grass, 4.875, -0.03, 12.375, false));
