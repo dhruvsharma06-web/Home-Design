@@ -59,7 +59,7 @@
     }
     _bg() {
       const L = LOOKS[this.look];
-      const out = this.mode !== 'doll'; if (this.backdrop) { this.backdrop.visible = out; const tx = this.bdTex[this.look === 'day' ? 'day' : 'evening']; this.bdParts[0].material.map = tx[0]; this.bdParts[1].material.map = tx[1]; if (this.site && this.site.groundMat) this.site.groundMat.color.set(this.look === 'day' ? '#98AA6C' : '#3C4636'); this.backdrop.position.y = 30.5 + (this.mode === 'walk' && this.o ? this.o.y * 0.0 : 0); }
+      const out = this.mode !== 'doll'; if (this.backdrop) { this.backdrop.visible = false; const tx = this.bdTex[this.look === 'day' ? 'day' : 'evening']; this.bdParts[0].material.map = tx[0]; this.bdParts[1].material.map = tx[1]; if (this.site && this.site.groundMat) this.site.groundMat.color.set(this.look === 'day' ? '#98AA6C' : '#3C4636'); this.backdrop.position.y = 30.5 + (this.mode === 'walk' && this.o ? this.o.y * 0.0 : 0); }
       if (out) { this.scene.background = new T.Color(this.skyCol[this.look]); this.scene.backgroundIntensity = 1; }
       else { this.scene.background = new T.Color(this.mode === 'doll' ? '#0b0d11' : L.fog); this.scene.backgroundIntensity = 1; }
       this.scene.fog.color.set(this.look === 'day' ? '#6E7C52' : '#1C2121'); this.scene.fog.near = this.mode === 'doll' ? 500 : 62; this.scene.fog.far = this.mode === 'doll' ? 2000 : 128;
