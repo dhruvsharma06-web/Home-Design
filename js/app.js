@@ -19,12 +19,13 @@
   /* ---------- landing ---------- */
   ORDER.forEach((id) => { const f = byId(id);
     for (const [host, cls] of [['#floorRail', 'li'], ['#fvRail', '']]) { const b = document.createElement('button'); b.dataset.id = id; b.innerHTML = `<span class="n">${f.short}</span><span class="t">${f.title}</span>`;
-      if (cls) { b.addEventListener('mouseenter', () => { world.hoverLevel(id); world.cb.onLevelHover(id); }); b.addEventListener('click', () => enterLevel(id)); const li = document.createElement('li'); li.appendChild(b); $(host).appendChild(li); }
+      if (cls) { b.addEventListener('mouseenter', () => { landHover(id); }); b.addEventListener('click', () => enterLevel(id)); const li = document.createElement('li'); li.appendChild(b); $(host).appendChild(li); }
       else { b.addEventListener('click', () => goLevel(id)); $(host).appendChild(b); } } });
-  $('#floorRail').addEventListener('mouseleave', () => { world.hoverLevel(null); world.cb.onLevelHover(null); });
-  $('#heroCard').addEventListener('click', () => world.extHover && enterLevel(world.extHover));
-  function showHouse() { body.classList.remove('inside', 'walk'); mode = 'ext'; current = null; world.showExterior(); history.replaceState(null, '', location.pathname); closeAll(); }
-  function enterLevel(id) { if (body.classList.contains('busy')) return; body.classList.add('busy'); body.classList.remove('lvl'); world.diveTo(id, () => { veil(true, byId(id).title); setTimeout(() => { selectFloor(id); body.classList.add('inside'); veil(false); body.classList.remove('busy'); }, 420); }); }
+  $('#floorRail').addEventListener('mouseleave', () => landHover(null));
+  landInit((id) => { const f = byId(id); $('#hcNum').textContent = f.short; $('#hcTitle').textContent = f.title; $('#hcTag').textContent = f.tag; }, (id) => enterLevel(id));
+  $('#heroCard').addEventListener('click', () => { const b = document.querySelector('#floorRail button.on'); if (b) enterLevel(b.dataset.id); });
+  function showHouse() { body.classList.remove('inside', 'walk'); mode = 'ext'; current = null; world.pause(true); landShow(); history.replaceState(null, '', location.pathname); closeAll(); }
+  function enterLevel(id) { if (body.classList.contains('busy')) return; body.classList.add('busy'); body.classList.remove('lvl'); landZoom(id, () => { world.pause(false); veil(true, byId(id).title); setTimeout(() => { selectFloor(id); body.classList.add('inside'); veil(false); body.classList.remove('busy'); }, 420); }); }
 
   /* ---------- inside ---------- */
   function selectFloor(id) {
@@ -51,7 +52,7 @@
   addEventListener('keydown', (e) => { if (e.key === 'Escape' && body.classList.contains('inside') && !/INPUT/.test(e.target.tagName)) (mode === 'walk' ? world.overview() : showHouse()); });
   $('#walkBtn').addEventListener('click', () => (mode === 'walk' ? world.overview() : world.enterSpawn()));
   $('#timeSeg').querySelectorAll('button').forEach((b) => b.addEventListener('click', () => setTime(b.dataset.n === '1')));
-  function setTime(n) { $('#timeSeg').querySelectorAll('button').forEach((x) => x.classList.toggle('on', (x.dataset.n === '1') === n)); world.setNight(n); }
+  function setTime(n) { landNight(n); $('#landTime').querySelectorAll('button').forEach((x) => x.classList.toggle('on', (x.dataset.n === '1') === n)); $('#timeSeg').querySelectorAll('button').forEach((x) => x.classList.toggle('on', (x.dataset.n === '1') === n)); world.setNight(n); }
   $('#rotBtn').addEventListener('click', () => world.rotateSelected()); $('#delBtn').addEventListener('click', () => world.deleteSelected());
   $('#liftBtn').addEventListener('click', () => { $('#fvRail').classList.add('pulse'); hint('Lift: pick a level on the right'); setTimeout(() => $('#fvRail').classList.remove('pulse'), 4000); });
   const SW = ['#D8CFC2', '#F0ECE4', '#A89D8F', '#8F9A86', '#70745F', '#5B6068', '#B07F52', '#9C5B47', '#3F4246', '#C2A468'];
@@ -61,7 +62,7 @@
   const closeAll = () => ['cust', 'ai', 'dash'].forEach((k) => ($('#' + k).hidden = true));
   document.querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', () => ($('#' + b.dataset.close).hidden = true)));
   const toggle = (k) => { const el = $('#' + k), was = el.hidden; closeAll(); el.hidden = !was; };
-  $('#custBtn').addEventListener('click', () => toggle('cust')); $('#aiBtn').addEventListener('click', () => toggle('ai')); $('#dashBtn').addEventListener('click', () => toggle('dash'));
+  $('#custBtn').addEventListener('click', () => toggle('cust')); $('#aiBtn2').addEventListener('click', () => toggle('ai')); $('#landTime').querySelectorAll('button').forEach((b) => b.addEventListener('click', () => setTime(b.dataset.n === '1'))); $('#aiBtn').addEventListener('click', () => toggle('ai')); $('#dashBtn').addEventListener('click', () => toggle('dash'));
 
   /* ---------- customise ---------- */
   const pills = (host, items, on, cur) => { $(host).innerHTML = items.map(([k, l]) => `<button data-k="${k}" class="${k === cur ? 'on' : ''}">${l}</button>`).join(''); $(host).querySelectorAll('button').forEach((b) => b.addEventListener('click', () => { $(host).querySelectorAll('button').forEach((x) => x.classList.toggle('on', x === b)); on(b.dataset.k); })); };
@@ -96,16 +97,17 @@
     { name: 'go_to', description: 'Move the visitor. Give a level, and optionally a room id on that level to stand inside it. view "dollhouse" shows the level from above; "exterior" shows the whole house.', parameters: P({ level: S('level id', ['g', 'f1', 'f2', 'f3', 't']), room: S('room id on that level'), view: S('view', ['walk', 'dollhouse', 'exterior']) }) },
     { name: 'set_time', description: 'Switch lighting', parameters: P({ time: S('time', ['day', 'evening']) }, ['time']) },
     { name: 'set_design', description: 'Change the colour scheme or materials of the whole house. Colours are hex like #D8CFC2.', parameters: P({ preset: S('preset', Object.keys(B.PRESETS)), floor: S('floor material', Object.keys(B.FLOORS_T)), wall: S('hex'), fabric: S('hex'), accent: S('hex'), joinery: S('hex'), kitchen: S('hex'), fins: S('hex'), frame: S('hex') }) },
-    { name: 'edit_objects', description: 'Add, remove or recolour furniture on the current level.', parameters: P({ action: S('action', ['add', 'remove', 'recolor']), type: S('object type', Object.keys(window.B4DIM)), room: S('room id'), color: S('hex colour for recolor') }, ['action', 'type']) },
+    { name: 'edit_objects', description: 'Add, remove, move, rotate or recolour furniture. Works on the current level, or give level to go there first. For move: to_room moves it into another room; dx / dy nudge it in metres (dx positive = east, dy positive = south). room narrows which object is meant.', parameters: P({ action: S('action', ['add', 'remove', 'move', 'rotate', 'recolor']), level: S('level id', ['g', 'f1', 'f2', 'f3', 't']), type: S('object type', [...new Set([...Object.keys(window.B4DIM), 'sofa', 'bed', 'dining', 'armchair', 'plant', 'tv', 'rug', 'lounger', 'verna'])]), to_room: S('room id to move it into'), dx: { type: 'NUMBER', description: 'metres east (+) or west (-)' }, dy: { type: 'NUMBER', description: 'metres south (+) or north (-)' }, room: S('room id'), color: S('hex colour for recolor') }, ['action', 'type']) },
   ] }];
   const sys = () => 'You are the guide and interior designer for B4, a private G+3 villa at Godrej Hillview, Khopoli. Be warm, specific and brief (2 to 4 sentences). Use the tools to take the visitor places and to make design changes, then describe what they are seeing. Only state facts from the data below. Vastu is a traditional design framework, not a guarantee.\nNow: ' + JSON.stringify(world.state()) + '\nHouse: ' + JSON.stringify(FLOORS.map((f) => ({ id: f.id, title: f.title, summary: f.summary, rooms: f.rooms.map((r) => ({ id: r.id, name: r.name, size: r.size, notes: r.notes })) })));
   const wait = (ms) => new Promise((r) => setTimeout(r, ms));
   async function run(name, a) {
-    if (name === 'go_to') { if (a.view === 'exterior') { showHouse(); return { ok: true }; } const id = a.level || (current && current.id) || 'f1'; if (!body.classList.contains('inside')) { selectFloor(id); body.classList.add('inside'); } else await new Promise((r) => goLevel(id, r)); await wait(300);
+    if (name === 'go_to') { if (a.view === 'exterior') { showHouse(); return { ok: true }; } const id = a.level || (current && current.id) || 'f1'; if (!body.classList.contains('inside')) { world.pause(false); landZoom(id, () => {}); selectFloor(id); body.classList.add('inside'); } else await new Promise((r) => goLevel(id, r)); await wait(300);
       if (a.room) { if (!world.enterRoom(a.room)) return { ok: false, error: 'no such room on this level', rooms: current.rooms.map((r) => r.id) }; } else if (a.view === 'walk') world.enterSpawn(); else if (a.view === 'dollhouse') world.overview(); return { ok: true, now: world.state() }; }
     if (name === 'set_time') { setTime(a.time === 'evening'); return { ok: true }; }
     if (name === 'set_design') { const { preset, ...rest } = a; if (preset && B.PRESETS[preset]) world.setTheme(B.PRESETS[preset]); world.setTheme(rest); drawCust(); return { ok: true, theme: B.THEME() }; }
-    if (name === 'edit_objects') { if (!current) return { ok: false, error: 'enter a level first' }; if (a.action === 'add') return { ok: !!world.addItem(a.type, a.room) }; if (a.action === 'remove') return { ok: true, removed: world.removeItems(a.type, a.room) }; const l = world.find(a.type, a.room); world.tintItems(a.color || '#D8CFC2', l); return { ok: true, changed: l.length }; }
+    if (name === 'edit_objects') { if (a.level && (!current || current.id !== a.level)) await run('go_to', { level: a.level, view: 'dollhouse' }); if (!current) return { ok: false, error: 'say which level' };
+      if (a.action === 'move' || a.action === 'rotate') { const l = world.find(a.type, a.room); if (!l.length) return { ok: false, error: 'no ' + a.type + ' found', rooms: current.rooms.map((r) => r.id) }; if (a.action === 'rotate') { world._select(l[0]); world.rotateSelected(); return { ok: true }; } const ok = world.moveItem(l[0], { room: a.to_room, dx: a.dx, dy: a.dy }); return ok ? { ok: true } : { ok: false, error: 'no free space there' }; } if (a.action === 'add') return { ok: !!world.addItem(a.type, a.room) }; if (a.action === 'remove') return { ok: true, removed: world.removeItems(a.type, a.room) }; const l = world.find(a.type, a.room); world.tintItems(a.color || '#D8CFC2', l); return { ok: true, changed: l.length }; }
     return { ok: false };
   }
   async function askAI(payload) {
@@ -133,5 +135,5 @@
 
   /* ---------- start ---------- */
   const k = (location.hash.match(/^#level-(\w)$/) || [])[1], f0 = FLOORS.find((x) => x.short.toLowerCase() === k);
-  setTimeout(() => { if (f0) { selectFloor(f0.id); body.classList.add('inside'); } else world.showExterior(); setTimeout(() => veil(false), 700); }, 60);
+  setTimeout(() => { if (f0) { selectFloor(f0.id); body.classList.add('inside'); } else { world.pause(true); landShow(); } setTimeout(() => veil(false), 700); }, 60);
 })();

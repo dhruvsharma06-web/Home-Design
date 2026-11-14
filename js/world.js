@@ -15,7 +15,7 @@
       this.el = el; this.cb = cb;
       const w = el.clientWidth || innerWidth, h = el.clientHeight || innerHeight;
       this.mobile = matchMedia('(hover: none)').matches || innerWidth < 800;
-      this.quality = this.mobile ? 'med' : 'high';
+      this.quality = 'high';
       const r = this.renderer = new T.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
       this.pr = this._cap(); r.setPixelRatio(this.pr); r.setSize(w, h);
       r.toneMapping = T.ACESFilmicToneMapping; r.outputColorSpace = T.SRGBColorSpace; r.shadowMap.enabled = true; r.shadowMap.type = T.PCFSoftShadowMap;
@@ -110,7 +110,7 @@
       if (this.ext) this.ext.visible = false;
       this.centre = new T.Vector3(this.o.x + floor.w / 2, this.o.y + 0.5, this.o.z + floor.h / 2);
       const v = floor.orbit || {}; this.mode = 'doll';
-      this.home = { theta: v.theta ?? -0.62, phi: v.phi ?? 0.86, radius: this._fitR(Math.hypot(floor.w, floor.h) / 2 + 1.2, 38) };
+      this.home = { theta: v.theta ?? 2.52, phi: v.phi ?? 0.86, radius: this._fitR(Math.hypot(floor.w, floor.h) / 2 + 1.2, 38) };
       this.goal.target.copy(this.centre); Object.assign(this.goal, this.home);
       Object.assign(this.orbit, { theta: this.home.theta + 0.5, phi: Math.max(0.05, this.home.phi - 0.22), radius: this.home.radius * 1.35 }); this.orbit.target.copy(this.centre);
       this.tween = null; this.selected = null; this.walkTo = null; this.diving = null;
@@ -177,6 +177,7 @@
         if (!down) return; const wasDrag = this.drag; down = null;
         if (wasDrag) { this._saveItem(wasDrag.g); this.drag = null; el.style.cursor = this.mode === 'walk' ? 'crosshair' : 'grab'; return; }
         if (moved > 6 || this.tween) return; pos(e);
+        if (this.mode !== 'ext' && this._pickDoor()) return;
         if (this.mode === 'ext') { const id = this._pickLevel(); if (id && this.cb.onLevel) this.cb.onLevel(id); return; }
         const id = this._pickRoom();
         if (this.mode === 'doll') { if (id) this.enterRoom(id); else this._select(null); }
@@ -191,6 +192,10 @@
       addEventListener('keydown', (e) => { if (/INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return; this.keys[e.code] = true; if (e.code === 'KeyR' && this.selected) this.rotateSelected(); if (e.code === 'Delete' && this.selected) this.deleteSelected(); });
       addEventListener('keyup', (e) => { this.keys[e.code] = false; }); addEventListener('blur', () => { this.keys = {}; });
     }
+    pause(on) { this.paused = on; }
+    _pickDoor() { const ds = (this.level && this.level.doors) || []; if (!ds.length) return false; this.ray.setFromCamera(this.ptr, this.camera); this.ray.far = this.mode === 'walk' ? 4 : 400; const h = this.ray.intersectObjects(ds, true)[0]; this.ray.far = Infinity; if (!h) return false; let d = h.object; while (d && !d.userData.door) d = d.parent; if (!d) return false; this.toggleDoor(d); return true; }
+    toggleDoor(d) { const s = d.userData.door; s.open = !s.open; s.target = s.open ? s.openA : 0; const i = this.col.indexOf(s.seg); if (!s.open && i < 0) this.col.push(s.seg); if (s.open && i >= 0) this.col.splice(i, 1); }
+    _doors(dt) { const ds = (this.level && this.level.doors) || []; const k = 1 - Math.exp(-dt * 6); for (const d of ds) { const s = d.userData.door; d.rotation.y += (s.target - d.rotation.y) * k; } }
     _pickLevel() { this.ray.setFromCamera(this.ptr, this.camera); const h = this.ray.intersectObjects(this.extPick || [], false)[0]; return h ? h.object.userData.floorId : null; }
     _pickItem() { this.ray.setFromCamera(this.ptr, this.camera); this.ray.far = this.mode === 'doll' ? 300 : 8; const h = this.ray.intersectObjects(this.items, true)[0]; this.ray.far = Infinity; return h ? (h.object.userData.item || null) : null; }
     _pickRoom() { this.ray.setFromCamera(this.ptr, this.camera); const h = this.ray.intersectObjects(this.roomMeshes, false)[0]; return h ? h.object.userData.roomId : null; }
@@ -235,6 +240,13 @@
       [f.w, f.d] = [f.d, f.w]; f.face = nf; f.x = cx - f.w / 2; f.y = cy - f.d / 2; g.rotation.y = B.ROT[nf];
       if (g.userData.box) Object.assign(g.userData.box, { x1: f.x, y1: f.y, x2: f.x + f.w, y2: f.y + f.d }); this._saveItem(g); this._select(g);
     }
+    /** move an object: to a room, or by dx / dy metres (dx = east, dy = south) */
+    moveItem(g, opt) { const f = g.userData.f; let cx = f.x + f.w / 2, cy = f.y + f.d / 2;
+      if (opt.room) { const r = this.floor.rooms.find((x) => x.id === opt.room); if (!r) return false; const b = B.bbox(B.roomPts(r)); cx = (b[0] + b[2]) / 2; cy = (b[1] + b[3]) / 2; }
+      cx += opt.dx || 0; cy += opt.dy || 0; const ox = f.x, oy = f.y;
+      for (let r = 0; r < 2.5; r += 0.25) { let done = false; for (let a = 0; a < 6.28; a += 0.5) { const x = cx + Math.cos(a) * r - f.w / 2, y = cy + Math.sin(a) * r - f.d / 2; if (this._fits(f, x, y, g)) { f.x = x; f.y = y; done = true; break; } if (!r) break; } if (done) break; }
+      if (f.x === ox && f.y === oy) return false;
+      g.position.set(f.x + f.w / 2, g.position.y, f.y + f.d / 2); if (g.userData.box) Object.assign(g.userData.box, { x1: f.x, y1: f.y, x2: f.x + f.w, y2: f.y + f.d }); this._saveItem(g); if (this.selected === g) this._select(g); return true; }
     deleteSelected() { const g = this.selected; if (!g) return false; this._remove(g); this._select(null); return true; }
     _remove(g) { const s = this._store(); if (g.userData.f.added) s.add = s.add.filter((x) => 'a' + x.id !== g.userData.idx); else s.del.push(g.userData.idx); this._put(s);
       g.parent.remove(g); this.items = this.level.items = this.items.filter((x) => x !== g); this.boxes = this.level.boxes = this.boxes.filter((b) => b.item !== g); this.lights = this.level.lights = this.lights.filter((l) => { for (let p = l.parent; p; p = p.parent) if (p === g) return false; return true; }); }
@@ -266,7 +278,7 @@
     /* ---------------- walking ---------------- */
     _floorY(x, y) { const p = this.floor.rooms.find((r) => r.kind === 'pit'); if (!p) return 0; const [a, b, c, d] = p.r, e = Math.min(x - a, c - x, y - b, d - y); return e <= 0 ? 0 : -0.45 * Math.min(1, e / 0.5); }
     _collide(px, py) {
-      const R = 0.27;
+      const R = 0.22;
       for (let it = 0; it < 3; it++) {
         for (const s of this.col) { const vx = s.x2 - s.x1, vy = s.y2 - s.y1, L = vx * vx + vy * vy; let t = L ? ((px - s.x1) * vx + (py - s.y1) * vy) / L : 0; t = Math.max(0, Math.min(1, t)); const cx = s.x1 + vx * t, cy = s.y1 + vy * t; let dx = px - cx, dy = py - cy, dist = Math.hypot(dx, dy), min = R + s.r; if (dist < min) { if (dist < 1e-5) { dx = 1; dy = 0; dist = 1; } px = cx + (dx / dist) * min; py = cy + (dy / dist) * min; } }
         for (const b of this.boxes) { if (b.t === 'pitbench') continue; const cx = Math.max(b.x1, Math.min(px, b.x2)), cy = Math.max(b.y1, Math.min(py, b.y2)); let dx = px - cx, dy = py - cy, dist = Math.hypot(dx, dy); if (dist < R) { if (dist < 1e-5) { const l = px - b.x1, r = b.x2 - px, u = py - b.y1, dn = b.y2 - py, mn = Math.min(l, r, u, dn); if (mn === l) px = b.x1 - R; else if (mn === r) px = b.x2 + R; else if (mn === u) py = b.y1 - R; else py = b.y2 + R; } else { px = cx + (dx / dist) * R; py = cy + (dy / dist) * R; } } }
@@ -295,9 +307,10 @@
 
     _loop(now) {
       const raw = (now - this._t) / 1000, dt = Math.min(0.05, raw); this._t = now;
-      if (this.el.isConnected) {
+      if (this.el.isConnected && !this.paused) {
+        this._doors(dt);
         if (this.tween) {
-          const tw = this.tween; tw.t += dt / tw.dur; const e = ease(Math.min(1, tw.t));
+          const tw = this.tween; tw.t += Math.min(0.25, raw) / tw.dur; const e = ease(Math.min(1, tw.t));
           this.camera.position.lerpVectors(tw.from.p, tw.to.p, e); this.camera.quaternion.slerpQuaternions(tw.from.q, tw.to.q, e); this.camera.fov = tw.from.fov + (tw.to.fov - tw.from.fov) * e; this.camera.updateProjectionMatrix();
           if (tw.t >= 1) { this.tween = null; tw.done && tw.done(); }
         } else if (this.mode !== 'walk') {
@@ -314,7 +327,7 @@
         const m = B.mats(); if (m.water.normalMap) { m.water.normalMap.offset.x += dt * 0.02; m.water.normalMap.offset.y += dt * 0.012; }
         if (this.composer) this.composer.render(); else this.renderer.render(this.scene, this.camera);
         // keep it smooth: ease the render resolution down if frames run long, back up when there is headroom
-        if (this.quality !== 'ultra') { this.ft.push(raw); if (this.ft.length >= 50) { const avg = this.ft.reduce((a, b) => a + b, 0) / this.ft.length; this.ft = []; const cap = this._cap(); let pr = this.pr; if (avg > 0.03 && pr > 0.7) pr = Math.max(0.7, pr - 0.2); else if (avg < 0.019 && pr < cap) pr = Math.min(cap, pr + 0.1); if (pr !== this.pr) { this.pr = pr; this.renderer.setPixelRatio(pr); if (this.composer) this.composer.setPixelRatio(pr); } } }
+        if (this.quality === 'auto') { this.ft.push(raw); if (this.ft.length >= 50) { const avg = this.ft.reduce((a, b) => a + b, 0) / this.ft.length; this.ft = []; const cap = this._cap(); let pr = this.pr; if (avg > 0.03 && pr > 0.7) pr = Math.max(0.7, pr - 0.2); else if (avg < 0.019 && pr < cap) pr = Math.min(cap, pr + 0.1); if (pr !== this.pr) { this.pr = pr; this.renderer.setPixelRatio(pr); if (this.composer) this.composer.setPixelRatio(pr); } } }
       }
       requestAnimationFrame(this._loop);
     }

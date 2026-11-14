@@ -369,6 +369,7 @@
   }
 
   /* ============================ walls ============================ */
+  let DOORS = null;
   function buildWall(wl, floor, parent, col) {
     const [x1, y1, x2, y2, t = 'w', o = {}] = wl, m = mats();
     const len = Math.hypot(x2 - x1, y2 - y1); if (len < 0.02) return;
@@ -387,7 +388,10 @@
     else if (t === 'g') glaze(0, hh, 1.5);
     else if (t === 'gp') { g.add(box(len, H, 0.012, m.glass, 0, 0, 0, false)); g.add(box(len, 0.03, 0.04, m.frame, 0, H - 0.03, 0, false)); }
     else if (t === 'win') { const s = o.s || 0.9, hd = o.h || 2.4; g.add(box(len, s, th, m.wall, 0, 0, 0)); g.add(box(len, H - hd, th, m.wall, 0, hd, 0)); glaze(s, hd - s, 1.3); g.add(box(len, 0.03, th + 0.06, m.marble, 0, s - 0.03, 0, false)); }
-    else if (t === 'd') { g.add(box(len, H - 2.15, th, m.wall, 0, 2.15, 0)); if (len < 1.3) { for (const s of [-1, 1]) g.add(box(0.05, 2.15, th + 0.04, m.wood, s * (len / 2 - 0.025), 0, 0, false)); g.add(box(len, 0.05, th + 0.04, m.wood, 0, 2.1, 0, false)); const leaf = box(len - 0.12, 2.08, 0.04, m.wood, 0, 0, 0); leaf.position.set(-len / 2 + 0.06, 1.04, (len - 0.12) / 2 + 0.02); leaf.rotation.y = Math.PI / 2; g.add(leaf); g.add(box(0.02, 0.12, 0.1, m.brass, -len / 2 + 0.1, 1.0, len - 0.25, false)); } }
+    else if (t === 'd') { g.add(box(len, H - 2.15, th, m.wall, 0, 2.15, 0)); if (len < 1.3 && floor.id !== 'g' && !(floor.openAir && floor.id === 't' && x1 === 1.38)) { for (const s of [-1, 1]) g.add(box(0.05, 2.15, th + 0.04, m.wood, s * (len / 2 - 0.025), 0, 0, false)); g.add(box(len, 0.05, th + 0.04, m.wood, 0, 2.1, 0, false));
+      const pv = new T.Group(), lw = len - 0.12; pv.position.set(-len / 2 + 0.06, 0, 0); pv.userData.keep = true;
+      pv.add(box(lw, 2.08, 0.04, m.wood, lw / 2, 0.01, 0)); for (const s of [-1, 1]) pv.add(box(0.02, 0.02, 0.14, m.brass, lw - 0.08, 1.02, s * 0.04, false));
+      const openA = Math.PI / 2 * 0.92; pv.rotation.y = openA; pv.userData.door = { open: true, openA, target: openA, seg: { x1, y1, x2, y2, r: 0.05 } }; g.add(pv); if (DOORS) DOORS.push(pv); } }
     else if (t === 'r') { g.add(box(len, 1.05, 0.016, m.glass, 0, 0.02, 0, false)); g.add(box(len, 0.035, 0.05, m.frame, 0, 1.07, 0, false)); g.add(box(len, 0.04, 0.05, m.frame, 0, 0, 0, false)); }
     else if (t === 'c') { g.add(box(len, 1.25, th, m.wall, 0, 0, 0)); for (let x = -len / 2 + 0.1; x < len / 2; x += 0.14) g.add(box(0.03, 0.6, 0.05, m.fins, x, 1.25, 0, false)); g.add(box(len, 0.04, 0.07, m.fins, 0, 1.85, 0, false)); }
     else if (t === 'j' || t === 'jd') { if (t === 'j') { for (let x = -len / 2 + 0.03; x < len / 2; x += 0.075) g.add(box(0.03, H - 0.1, 0.06, m.fins, x, 0.04, 0)); g.add(box(len, 0.04, 0.08, m.fins, 0, 0, 0)); } g.add(box(len, 0.06, 0.08, m.fins, 0, H - 0.06, 0)); }
@@ -421,7 +425,7 @@
   /* ============================ one level ============================ */
   function buildLevel(floor, opt = {}) {
     const m = mats(), shell = !!opt.shell, group = new T.Group(), ceil = new T.Group(), stat = new T.Group();
-    const out = { group, ceil, col: [], boxes: [], roomMeshes: [], hl: {}, items: [], lights: [], floor };
+    const out = { group, ceil, col: [], boxes: [], roomMeshes: [], hl: {}, items: [], lights: [], floor, doors: [] }; DOORS = shell ? null : out.doors;
     ceil.userData.keep = true; group.add(stat);
     const matFor = (k) => ({ wet: m.kota, core: m.marble, stair: m.kota, bal: m.kotaGreen, out: m.limeYellow, pave: m.limeGrey, lawn: m.grass, pit: m.deck, terr: m.terr })[k] || m.marble;
     const E = floor.id === 'g' ? 0 : 0.45;                                // the 0.45 m elevation feature all round
@@ -516,15 +520,13 @@
       v.add(box(w, hh, d, fl % 2 ? m.villa : m.villa2, 0, 0, 0)); v.add(box(w + 0.6, 0.25, d + 0.6, m.villa, 0, hh, 0));
       for (let f = 0; f < fl; f++) { v.add(box(w * 0.7, 1.7, 0.06, m.villaGlass, 0, f * 3.1 + 0.8, d / 2 + 0.01)); v.add(box(0.06, 1.5, d * 0.5, m.villaGlass, w / 2 + 0.01, f * 3.1 + 0.9, 0)); v.add(box(w + 0.5, 0.2, d + 0.5, m.villa, 0, f * 3.1 - 0.1, 0)); }
       v.add(box(w + 5, 1.3, 0.18, m.villa, 0, 0, d / 2 + 4)); v.position.set(x, 0, z); v.rotation.y = rot || 0; s.add(v); };
-    villa(-9, 9, 8, 14, 3); villa(-22, 8, 9, 13, 2); villa(21, 10, 8, 14, 3); villa(34, 9, 9, 12, 2); villa(-36, 10, 8, 13, 3);
-    villa(-18, -19, 9, 12, 2, Math.PI); villa(-4, -20, 8, 12, 3, Math.PI); villa(11, -19, 9, 13, 2, Math.PI); villa(26, -20, 8, 12, 3, Math.PI); villa(41, -19, 9, 12, 2, Math.PI);
+
     // trees
     const tree = (x, z, sc) => { const t = new T.Group(); t.add(cyl(0.12 * sc, 2.2 * sc, m.trunk, 0, 0, 0, 8, 0.07 * sc));
       for (let i = 0; i < 5; i++) t.add(blob((0.9 + rnd() * 0.7) * sc, [m.leaf, m.leaf2, m.leaf3][i % 3], (rnd() - 0.5) * 1.6 * sc, (2.6 + rnd() * 1.6) * sc, (rnd() - 0.5) * 1.6 * sc, 0.85)); t.position.set(x, 0, z); t.rotation.y = rnd() * 6; s.add(t); };
-    for (let i = 0; i < 150; i++) { const a = rnd() * Math.PI * 2, r = 16 + rnd() * rnd() * 190, x = 4.9 + Math.cos(a) * r, z = 9.5 + Math.sin(a) * r;
-      if (z > -9.5 && z < 0.2) continue; if (Math.abs(x - 4.9) < 9 && z > -1 && z < 21) continue; tree(x, z, 0.9 + rnd() * 1.5); }
-    for (let i = 0; i < 26; i++) tree(-60 + i * 5.2 + rnd() * 2, 27 + rnd() * 8, 1.1 + rnd() * 1.2);            // club-side landscape to the south
-    for (let x = -70; x < 80; x += 9) { tree(x + rnd() * 2, -9.6, 1.0 + rnd() * 0.5); }
+
+
+
     // the Khopoli hills
     const ridge = (R, hMax, mat, seed) => { const seg = 96, pos = [], idx = []; let a = seed; const r2 = () => ((a = (a * 16807) % 2147483647) / 2147483647); const hs = []; for (let i = 0; i <= seg; i++) hs.push(hMax * (0.35 + 0.65 * Math.abs(Math.sin(i * 0.37 + seed) * Math.cos(i * 0.13 + seed * 2))) * (0.75 + r2() * 0.5)); hs[seg] = hs[0];
       for (let i = 0; i <= seg; i++) { const t = (i / seg) * Math.PI * 2, c = Math.cos(t), sn = Math.sin(t); pos.push(c * (R + 90), -2, sn * (R + 90), c * R, hs[i], sn * R, c * (R - 70), -2, sn * (R - 70)); }

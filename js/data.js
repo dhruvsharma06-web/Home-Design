@@ -256,7 +256,7 @@ window.FLOORS = [
 function upper({ id, level, short, title, drawing, cut }) {
   const master = cut
     ? { id: 'master', name: 'Bedroom 1 · Gallery', size: '3.20 × 3.60 m', r: [0, 0, 3.55, 3.75], kind: '', notes: 'On the third floor, Bedroom 1 looks through a glass railing into the double-height volume and its onyx wall, like a mezzanine gallery. The terrace skylight above brings daylight straight down into the room. Godrej Kreation wardrobe on the south wall.', cam: { from: [0.5, 3.3, 1.55], to: [4.6, 1.2, 1.5] } }
-    : { id: 'master', name: 'Bedroom 1 · Double-height Retreat', size: '6.45 × 3.60 m', label: [5.1, 1.1], poly: [[0, 0], [6.75, 0], [6.75, 2.25], [3.55, 2.25], [3.55, 3.75], [0, 3.75]], kind: '', notes: 'The full-width bedroom across the north front. Its eastern half rises two storeys behind tall TOSTEM glazing, a private double-height retreat discovered upstairs and kept away from the entrance. The back wall of that volume is the home’s single hero moment: a backlit Beige/Statuario-pattern onyx wall, two storeys tall. Two armchairs and a reading lamp sit before it.', cam: { from: [0.7, 3.3, 1.5], to: [5.6, 1.4, 2.6] } };
+    : { id: 'master', name: 'Bedroom 1 · Double-height Retreat', size: '6.45 × 3.60 m', label: [5.1, 1.1], poly: [[0, 0], [6.75, 0], [6.75, 2.25], [3.55, 2.25], [3.55, 3.75], [0, 3.75]], kind: '', notes: 'The full-width bedroom across the north front. Its eastern half rises two storeys behind tall TOSTEM glazing, a private double-height retreat discovered upstairs and kept away from the entrance. The back wall of that volume is the home’s single hero moment: a backlit Beige/Statuario-pattern onyx wall, two storeys tall. Two armchairs and a reading lamp sit before it.', cam: { from: [4.1, 0.45, 1.5], to: [5.6, 1.95, 2.3] } };
   const rooms = [
     master,
     { id: 'living', name: 'Living', size: '3.10 × 7.68 m', label: [5.1, 5.0], poly: [[3.55, 2.25], [6.75, 2.25], [6.75, 8.25], [3.42, 8.25], [3.42, 3.75], [3.55, 3.75]], kind: '', notes: 'Spanish Beige marble and warm white walls. A long greige sofa sits under the east window, with an armchair, a stone coffee table and a low TV wall on the stair side. The hills fill both east windows.', cam: { from: [3.9, 8.0, 1.5], to: [5.8, 3.4, 1.0] } },
@@ -268,7 +268,7 @@ function upper({ id, level, short, title, drawing, cut }) {
 
   const walls = [
     [0, 0, 3.55, 0, 'g'], [3.55, 0, 6.75, 0, 'g', cut ? undefined : { hh: 5.8 }], ...EAST(!cut),
-    [3.55, 2.25, 6.75, 2.25, 'w', cut ? undefined : { hh: 5.8 }], [3.55, 2.25, 3.55, 2.8], [3.55, 2.8, 3.55, 3.7, 'd'], [3.55, 3.7, 3.55, 3.75], [3.42, 3.75, 3.55, 3.75],
+    [3.55, 2.25, 6.75, 2.25, 'w', cut ? undefined : { hh: 5.8 }], [3.55, 2.25, 3.55, 2.7], [3.55, 2.7, 3.55, 3.72, 'd'], [3.42, 3.75, 3.55, 3.75],
     [2.85, 9.3, 3.42, 9.3],
     ...CORE.walls,
   ];

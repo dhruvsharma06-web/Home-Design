@@ -18,13 +18,13 @@
   <!-- ============ LANDING: only the house ============ -->
   <div class="land" id="land">
     <div class="mark"><span class="mono">B4</span><span class="mark-name">Godrej Hillview · Khopoli</span></div>
-    <button class="chip" id="dashBtn">Overview</button>
+    <div class="land-ctl"><div class="seg" id="landTime"><button data-n="0" class="on">Day</button><button data-n="1">Evening</button></div><button class="chip" id="aiBtn2">✦ AI guide</button><button class="chip" id="dashBtn">Overview</button></div>
     <div class="hero-card" id="heroCard">
       <div class="hc-level"><span class="hc-label">Level</span><span class="hc-num" id="hcNum">1</span></div>
       <div class="hc-body"><div class="hc-title" id="hcTitle"></div><div class="hc-tag" id="hcTag"></div><div class="hc-cta">Step inside →</div></div>
     </div>
     <ol class="floor-rail" id="floorRail"></ol>
-    <div class="hero-hint"><span class="diamond"></span><span>Drag to turn the house · hover a level · click to step inside</span></div>
+    <div class="hero-hint"><span class="diamond"></span><span>Hover a level · click to step inside</span></div>
   </div>
 
   <!-- ============ INSIDE ============ -->
@@ -91,7 +91,7 @@
       window.THREE = THREE;
       window.ADDONS = { RGBELoader: a.RGBELoader, EffectComposer: b.EffectComposer, RenderPass: c.RenderPass, UnrealBloomPass: d.UnrealBloomPass, GTAOPass: e.GTAOPass, OutputPass: f.OutputPass, RoundedBoxGeometry: g.RoundedBoxGeometry, RoomEnvironment: h.RoomEnvironment, GLTFLoader: i.GLTFLoader, BufferGeometryUtils: j };
     } catch (err) { console.error(err); }
-    for (const s of ['js/data.js', 'js/plan2d.js', 'js/build.js', 'js/world.js', 'js/app.js']) await new Promise((r) => { const el = document.createElement('script'); el.src = s; el.onload = r; el.onerror = r; document.body.appendChild(el); });
+    for (const s of ['js/data.js', 'js/plan2d.js', 'js/build.js', 'js/world.js', 'js/landing.js', 'js/app.js']) await new Promise((r) => { const el = document.createElement('script'); el.src = s; el.onload = r; el.onerror = r; document.body.appendChild(el); });
   </script>
 </body>
 </html>

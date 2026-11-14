@@ -265,3 +265,18 @@ body.walk .fv-panel { opacity: 0; transform: translateX(-30px); pointer-events: 
 .lift-ind { position: absolute; left: 50%; top: 22%; transform: translateX(-50%); text-align: center; color: #2b2a28; opacity: 0; transition: opacity .3s .5s; }
 .lift.shut .lift-ind { opacity: 1; } .lift-ind span { display: block; font-family: var(--serif); font-size: 64px; } .lift-ind small { letter-spacing: .25em; text-transform: uppercase; font-size: 11px; }
 @media (max-width: 900px) { .side { left: 8px; right: 8px; width: auto; top: auto; height: 62vh; } .dgrid { grid-template-columns: repeat(2, 1fr); } .dgrid.lv, .dcols { grid-template-columns: 1fr 1fr; } .selbar { flex-wrap: wrap; bottom: 120px; width: calc(100% - 24px); } #dashBtn { right: 12px; top: 64px; } }
+
+/* v4: photo landing over the 3D canvas */
+.land .hero-svg { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; transition: transform .9s cubic-bezier(.65,0,.25,1), opacity .5s; }
+.land.zoom .hero-svg { opacity: .0; transition: transform .9s cubic-bezier(.65,0,.25,1), opacity .5s .4s; }
+.land > *:not(.hero-svg) { position: absolute; z-index: 2; }
+.land { background: #0b0d11; }
+.land.active .hero-svg .dim { opacity: 1; }
+.land.active .leader { opacity: 1; }
+.land .hero-img { filter: saturate(1.04) contrast(1.05); }
+
+.land-ctl { right: 24px; top: 20px; display: flex; gap: 8px; align-items: center; }
+.land-ctl #dashBtn { position: static; }
+.land .eve { opacity: 0; transition: opacity 1.2s ease; }
+.land.night .eve { opacity: 1; }
+@media (max-width: 900px) { .land-ctl { top: 60px; right: 12px; flex-wrap: wrap; justify-content: flex-end; } }
