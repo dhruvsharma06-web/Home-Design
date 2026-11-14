@@ -90,7 +90,7 @@
       soffit: tx('#CDAA82', { roughness: 0.7 }, { c: 'wood_c.jpg', n: 'wood_n.jpg' }, 1.4),
       asphalt: tx('#3E3F41', { roughness: 0.95 }, { n: 'stone_n.jpg' }, 3),
       paver: tx('#8E8B85', { roughness: 0.9 }, { c: 'stone_c.jpg', n: 'stone_n.jpg' }, 1.2),
-      villa: std('#E6E1D8', { roughness: 0.95 }), villa2: std('#C9BCA8', { roughness: 0.95 }), villaGlass: std('#2B3A44', { roughness: 0.1, metalness: 0.5 }),
+      villa: std('#EEEAE3', { roughness: 0.92 }), villa2: std('#DCD0BE', { roughness: 0.92 }), villaGlass: std('#26323B', { roughness: 0.08, metalness: 0.55, emissive: new T.Color('#FFC27E'), emissiveIntensity: 0 }),
       hill: new T.MeshStandardMaterial({ color: '#5E7A5A', roughness: 1, flatShading: true }), hill2: new T.MeshStandardMaterial({ color: '#6F8A7C', roughness: 1, flatShading: true }),
       hl: new T.MeshBasicMaterial({ color: '#FFD9A0', transparent: true, opacity: 0.0, depthWrite: false }),
     };
@@ -258,7 +258,7 @@
         for (const s of [-1, 1]) { const leg = long ? box(TW * 0.55, 0.71, 0.05, m.dark, 0, 0, s * TD * 0.36) : box(0.05, 0.71, TD * 0.55, m.dark, s * TW * 0.36, 0, 0); g.add(leg); }
         const per = seats / 2;
         for (let i = 0; i < per; i++) { const t = -0.5 + (i + 0.5) / per; const put = (x, z, r) => { const c = chairModel(m, m.fabric); c.position.set(x, 0, z); c.rotation.y = r; g.add(c); };
-          if (long) { put(-TW / 2 - 0.16, t * TD, -Math.PI / 2); put(TW / 2 + 0.16, t * TD, Math.PI / 2); } else { put(t * TW, -TD / 2 - 0.16, 0); put(t * TW, TD / 2 + 0.16, Math.PI); } }
+          if (long) { put(-TW / 2 - 0.16, t * TD, Math.PI / 2); put(TW / 2 + 0.16, t * TD, -Math.PI / 2); } else { put(t * TW, -TD / 2 - 0.16, 0); put(t * TW, TD / 2 + 0.16, Math.PI); } }
         if (!f.outdoor) { g.add(box(long ? 0.04 : TW * 0.8, 0.03, long ? TD * 0.8 : 0.04, m.brass, 0, 1.6, 0, false)); g.add(box(long ? 0.025 : TW * 0.78, 0.008, long ? TD * 0.78 : 0.025, m.glow, 0, 1.592, 0, false)); for (const s of [-1, 1]) g.add(cyl(0.003, H - 1.63, m.dark, long ? 0 : s * TW * 0.35, 1.63, long ? s * TD * 0.35 : 0, 6)); g.userData.light = { y: 1.5, color: '#FFD9A8', i: 3 }; }
         g.add(cyl(0.06, 0.2, m.ceramic, 0, 0.75, 0, 20, 0.045)); g.add(blob(0.1, m.leaf2, 0, 1.06, 0));
         break;
@@ -509,18 +509,34 @@
     const m = mats(), g = new T.Group(), s = new T.Group(); g.add(s);
     const rnd = (() => { let a = 1337; return () => ((a = (a * 16807) % 2147483647) / 2147483647); })();
     const gm = m.grass.clone(); gm.color = new T.Color('#8EA070'); gm.userData = { tile: 2.4 };
-    const ground = new T.Mesh(new T.CircleGeometry(75, 64), gm); { const uv = ground.geometry.attributes.uv; for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * 55, uv.getY(i) * 55); }
+    const ground = new T.Mesh(new T.CircleGeometry(125, 72), gm); { const uv = ground.geometry.attributes.uv; for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * 90, uv.getY(i) * 90); }
     ground.rotation.x = -Math.PI / 2; ground.position.set(4.9, -0.06, 9.5); ground.receiveShadow = true; ground.userData.keep = true; g.add(ground);
     const sync = () => { gm.map = m.grass.map; gm.normalMap = m.grass.normalMap; gm.needsUpdate = true; }; setTimeout(sync, 1500); setTimeout(sync, 6000);
     // road + footpath on the north
     s.add(box(140, 0.06, 6.5, m.asphalt, 5, -0.08, -4.4, false)); s.add(box(140, 0.1, 1.1, m.paver, 5, -0.08, -0.6, false)); s.add(box(140, 0.1, 1.1, m.paver, 5, -0.08, -8.2, false));
     for (let x = -64; x < 70; x += 6) s.add(box(2.4, 0.005, 0.12, m.ceramic, x, -0.018, -4.4, false));
     // neighbouring villas
-    const villa = (x, z, w, d, fl, rot) => { const v = new T.Group(); const hh = fl * 3.1;
-      v.add(box(w, hh, d, fl % 2 ? m.villa : m.villa2, 0, 0, 0)); v.add(box(w + 0.6, 0.25, d + 0.6, m.villa, 0, hh, 0));
-      for (let f = 0; f < fl; f++) { v.add(box(w * 0.7, 1.7, 0.06, m.villaGlass, 0, f * 3.1 + 0.8, d / 2 + 0.01)); v.add(box(0.06, 1.5, d * 0.5, m.villaGlass, w / 2 + 0.01, f * 3.1 + 0.9, 0)); v.add(box(w + 0.5, 0.2, d + 0.5, m.villa, 0, f * 3.1 - 0.1, 0)); }
-      v.add(box(w + 5, 1.3, 0.18, m.villa, 0, 0, d / 2 + 4)); v.position.set(x, 0, z); v.rotation.y = rot || 0; s.add(v); };
+    // a modern G+2 / G+3 villa on a neighbouring plot, front to the road (north), in the same restrained language
+    const villa = (x, z, w, d, fl, k) => { const v = new T.Group(), S = 3.0, F = 3.1, top = S + fl * F, body = k % 3 === 1 ? m.villa2 : m.villa, side = k % 2 ? 1 : -1;
+      for (const [a, b] of [[-1, -1], [1, -1], [-1, 1], [1, 1], [0, -1]]) v.add(box(0.35, S, 0.45, m.villa, a * (w / 2 - 0.4), 0, b * (d / 2 - 0.5)));            // stilt columns
+      v.add(box(w - 1.2, S - 0.2, d - 3, m.dark, 0, 0, 0.6));                                                                                  // shaded stilt core
+      v.add(box(w, fl * F, d, body, 0, S, 0));
+      for (let f = 0; f <= fl; f++) v.add(box(w + 0.5, 0.22, d + 0.5, m.villa, 0, S + f * F - 0.11, 0));                                         // slab bands
+      for (let f = 0; f < fl; f++) { const y = S + f * F + 0.2;
+        v.add(box(w * 0.58, 2.5, 0.05, m.villaGlass, -side * w * 0.12, y, -d / 2 - 0.02));                                                       // front glazing
+        for (let i = 0; i <= 3; i++) v.add(box(0.05, 2.5, 0.07, m.frame, -side * w * 0.12 - w * 0.29 + (w * 0.58 / 3) * i, y, -d / 2 - 0.04, false));
+        v.add(box(0.05, 1.3, d * 0.42, m.villaGlass, (w / 2 + 0.02) * side, y + 0.7, -d * 0.1)); v.add(box(0.05, 1.3, d * 0.3, m.villaGlass, -(w / 2 + 0.02) * side, y + 0.7, d * 0.18)); }
+      for (let i = 0; i < 7; i++) v.add(box(0.05, fl * F, 0.32, m.fins, side * (w / 2 - 0.25 - i * 0.2), S, -d / 2 - 0.2));                       // timber fins
+      if (k % 2 === 0) v.add(box(w * 0.22, fl * F, 0.06, m.cladding, side * w * 0.36, S, -d / 2 - 0.04));                                       // stone panel
+      v.add(box(w, 1.05, 0.02, m.glass, 0, top + 0.12, -d / 2 + 0.05, false)); v.add(box(0.02, 1.05, d, m.glass, -w / 2 + 0.05, top + 0.12, 0, false)); v.add(box(0.02, 1.05, d, m.glass, w / 2 - 0.05, top + 0.12, 0, false));
+      v.add(box(w * 0.4, 2.6, d * 0.32, body, side * w * 0.2, top, d * 0.12));                                                                  // stair mumty
+      const cw = w + 3; v.add(box(cw, 1.25, 0.2, m.wall, 0, 0, -d / 2 - 4.2)); for (let q = -cw / 2 + 0.1; q < cw / 2; q += 0.14) v.add(box(0.03, 0.55, 0.05, m.fins, q, 1.25, -d / 2 - 4.2, false));
+      v.add(box(3.2, 1.7, 0.06, m.dark, side * (cw / 2 - 1.8), 0.02, -d / 2 - 4.3));                                                             // gate
+      v.add(box(cw, 0.04, d + 8, m.paver, 0, -0.03, 0, false));                                                                                   // plot paving
+      v.position.set(x, 0, z); s.add(v); };
 
+    // the society: neighbouring plotted villas on both sides and across the road (club side to the south stays open)
+    villa(-4.875, 10.5, 6.75, 13, 2, 0); villa(-14.625, 10.5, 6.75, 13, 3, 1); villa(-24.375, 10.5, 6.75, 13, 2, 2); villa(14.625, 10.5, 6.75, 13, 3, 3); villa(24.375, 10.5, 6.75, 13, 2, 4); villa(34.125, 10.5, 6.75, 13, 3, 5);
     // trees
     const tree = (x, z, sc) => { const t = new T.Group(); t.add(cyl(0.12 * sc, 2.2 * sc, m.trunk, 0, 0, 0, 8, 0.07 * sc));
       for (let i = 0; i < 5; i++) t.add(blob((0.9 + rnd() * 0.7) * sc, [m.leaf, m.leaf2, m.leaf3][i % 3], (rnd() - 0.5) * 1.6 * sc, (2.6 + rnd() * 1.6) * sc, (rnd() - 0.5) * 1.6 * sc, 0.85)); t.position.set(x, 0, z); t.rotation.y = rnd() * 6; s.add(t); };
@@ -541,7 +557,7 @@
     mergeStatic(lite); g.add(lite);
     mergeStatic(s);
     g.position.set(-4.875, 0, -9.5);
-    return { group: g, plotLite: lite };
+    return { group: g, plotLite: lite, groundMat: gm };
   }
 
   window.B4 = { T, H, SLAB, ROT, MOVABLE, NOCOLLIDE, mats, applyTheme, THEME: () => THEME, PRESETS, FLOORS_T, buildLevel, buildFurn, buildSite, roomPts, bbox, box, setAniso: (a) => { maxAniso = a; } };

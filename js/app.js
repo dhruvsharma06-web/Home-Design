@@ -24,7 +24,7 @@
   $('#floorRail').addEventListener('mouseleave', () => landHover(null));
   landInit((id) => { const f = byId(id); $('#hcNum').textContent = f.short; $('#hcTitle').textContent = f.title; $('#hcTag').textContent = f.tag; }, (id) => enterLevel(id));
   $('#heroCard').addEventListener('click', () => { const b = document.querySelector('#floorRail button.on'); if (b) enterLevel(b.dataset.id); });
-  function showHouse() { body.classList.remove('inside', 'walk'); mode = 'ext'; current = null; world.pause(true); landShow(); history.replaceState(null, '', location.pathname); closeAll(); }
+  function showHouse(keep) { body.classList.remove('inside', 'walk'); mode = 'ext'; current = null; world.pause(true); landShow(); history.replaceState(null, '', location.pathname); if (!keep) closeAll(); }
   function enterLevel(id) { if (body.classList.contains('busy')) return; body.classList.add('busy'); body.classList.remove('lvl'); landZoom(id, () => { world.pause(false); veil(true, byId(id).title); setTimeout(() => { selectFloor(id); body.classList.add('inside'); veil(false); body.classList.remove('busy'); }, 420); }); }
 
   /* ---------- inside ---------- */
@@ -102,7 +102,7 @@
   const sys = () => 'You are the guide and interior designer for B4, a private G+3 villa at Godrej Hillview, Khopoli. Be warm, specific and brief (2 to 4 sentences). Use the tools to take the visitor places and to make design changes, then describe what they are seeing. Only state facts from the data below. Vastu is a traditional design framework, not a guarantee.\nNow: ' + JSON.stringify(world.state()) + '\nHouse: ' + JSON.stringify(FLOORS.map((f) => ({ id: f.id, title: f.title, summary: f.summary, rooms: f.rooms.map((r) => ({ id: r.id, name: r.name, size: r.size, notes: r.notes })) })));
   const wait = (ms) => new Promise((r) => setTimeout(r, ms));
   async function run(name, a) {
-    if (name === 'go_to') { if (a.view === 'exterior') { showHouse(); return { ok: true }; } const id = a.level || (current && current.id) || 'f1'; if (!body.classList.contains('inside')) { world.pause(false); landZoom(id, () => {}); selectFloor(id); body.classList.add('inside'); } else await new Promise((r) => goLevel(id, r)); await wait(300);
+    if (name === 'go_to') { if (a.view === 'exterior') { showHouse(true); return { ok: true }; } const id = a.level || (current && current.id) || 'f1'; if (!body.classList.contains('inside')) { world.pause(false); landZoom(id, () => {}); selectFloor(id); body.classList.add('inside'); } else await new Promise((r) => goLevel(id, r)); await wait(300);
       if (a.room) { if (!world.enterRoom(a.room)) return { ok: false, error: 'no such room on this level', rooms: current.rooms.map((r) => r.id) }; } else if (a.view === 'walk') world.enterSpawn(); else if (a.view === 'dollhouse') world.overview(); return { ok: true, now: world.state() }; }
     if (name === 'set_time') { setTime(a.time === 'evening'); return { ok: true }; }
     if (name === 'set_design') { const { preset, ...rest } = a; if (preset && B.PRESETS[preset]) world.setTheme(B.PRESETS[preset]); world.setTheme(rest); drawCust(); return { ok: true, theme: B.THEME() }; }

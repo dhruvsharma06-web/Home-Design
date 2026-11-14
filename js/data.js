@@ -191,7 +191,7 @@ window.FLOORS = [
     furn: [
       { t: 'bed', x: 0.06, y: 1.15, w: 2.05, d: 1.65, face: 'w' },
       { t: 'nightstand', x: 0.06, y: 0.68, w: 0.45, d: 0.42 }, { t: 'nightstand', x: 0.06, y: 2.85, w: 0.45, d: 0.42 },
-      { t: 'wardrobe', x: 1.3, y: 3.1, w: 2.02, d: 0.6, face: 's' },
+      { t: 'wardrobe', x: 1.05, y: 3.12, w: 1.65, d: 0.58, face: 's' },
       { t: 'armchair', x: 2.5, y: 0.2, w: 0.75, d: 0.75, face: 'n' },
       { t: 'curtain', x: 0.12, y: 0.07, w: 3.2, d: 0.1, face: 'n' },
       { t: 'mandir', x: 6.2, y: 0.2, w: 0.5, d: 1.3, face: 'e' }, { t: 'aasan', x: 5.5, y: 0.55, w: 0.6, d: 0.6 },
@@ -277,7 +277,7 @@ function upper({ id, level, short, title, drawing, cut }) {
   const furn = [
     { t: 'bed', x: 0.06, y: 0.95, w: 2.1, d: 1.9, face: 'w' },
     { t: 'nightstand', x: 0.06, y: 0.45, w: 0.5, d: 0.42 }, { t: 'nightstand', x: 0.06, y: 2.92, w: 0.5, d: 0.42 },
-    { t: 'wardrobe', x: 1.3, y: 3.1, w: 2.02, d: 0.6, face: 's' },
+    { t: 'wardrobe', x: 1.05, y: 3.12, w: 1.65, d: 0.58, face: 's' },
     { t: 'curtain', x: 0.12, y: 0.07, w: 3.2, d: 0.1, face: 'n' },
     ...LIVING(2.9),
     { t: 'dining', x: 4.6, y: 8.5, w: 1.0, d: 1.75 },

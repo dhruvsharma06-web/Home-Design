@@ -6,7 +6,7 @@
   const DIM = { sofa: [2.3, 0.92], armchair: [0.82, 0.85], bed: [2.1, 1.6], coffee: [1.1, 0.6], dining: [1.0, 1.8], plant: [0.5, 0.5], floorlamp: [0.35, 0.35], rug: [2.0, 1.4], sidetable: [0.42, 0.42], nightstand: [0.5, 0.42], desk: [1.2, 0.55], chair: [0.48, 0.5], stool: [0.36, 0.36], lounger: [0.7, 1.9], bench: [1.2, 0.4], tv: [1.8, 0.42] };
   const LOOKS = {
     day: { sun: 2.3, sunC: '#FFE7C8', hemi: 0.28, env: 0.62, exp: 0.86, bg: 1, lights: 0.2, accent: 0.4, onyx: 0.4, shade: 0.4, bloom: 0.16, fog: '#C9D6DA', sunPos: [22, 20, 15] },
-    evening: { sun: 0.1, sunC: '#9FB6E8', hemi: 0.05, env: 0.06, exp: 0.95, bg: 0.035, lights: 1.35, accent: 1.3, onyx: 1.1, shade: 1.4, bloom: 0.42, fog: '#0B0F16', sunPos: [-18, 14, 12] },
+    evening: { sun: 0.12, sunC: '#9FB6E8', hemi: 0.07, env: 0.08, exp: 0.8, bg: 0.035, lights: 0.42, accent: 0.5, onyx: 0.65, shade: 0.8, bloom: 0.2, fog: '#0B0F16', sunPos: [-18, 14, 12] },
     dusk: { sun: 0.75, sunC: '#FFB98A', hemi: 0.2, env: 0.32, exp: 0.98, bg: 0.42, lights: 1.25, accent: 1.2, onyx: 1.0, shade: 1.2, bloom: 0.36, fog: '#4A5568', sunPos: [-26, 9, 14] },
   };
 
@@ -47,19 +47,22 @@
       new T.TextureLoader().load('assets/env/hills.jpg', (t) => { t.mapping = T.EquirectangularReflectionMapping; t.colorSpace = T.SRGBColorSpace; this.sky = t; this._bg(); }, undefined, () => {});
     }
     _backdrop() {
-      // the scenery of the original exterior photo, wrapped round the house (mirrored tiles keep the seams continuous)
-      const TL = new T.TextureLoader(), mk = (f) => { const t = TL.load(f); t.colorSpace = T.SRGBColorSpace; t.wrapS = T.MirroredRepeatWrapping; t.repeat.set(10, 1); t.anisotropy = 8; return t; };
-      this.bdTex = { day: mk('assets/env/backdrop_day.jpg'), evening: mk('assets/env/backdrop_eve.jpg') };
-      const m = new T.MeshBasicMaterial({ map: this.bdTex.day, side: T.BackSide, fog: false, depthWrite: false });
-      const bd = this.backdrop = new T.Mesh(new T.CylinderGeometry(300, 300, 171.8, 128, 1, true), m); bd.position.set(0, 30.5, 1.25); bd.renderOrder = -1; this.scene.add(bd);
-      this.skyCol = { day: '#c9d5e9', evening: '#394468', dusk: '#394468' };
+      // scenery from the original exterior photo: the club + road once, behind the house (south, the club side);
+      // everywhere else just sky, hills and fields
+      const TL = new T.TextureLoader(), mk = (f, wrap, rep) => { const t = TL.load(f); t.colorSpace = T.SRGBColorSpace; t.wrapS = wrap; t.repeat.set(rep, 1); t.anisotropy = 8; if (rep < 0) t.offset.x = 1; return t; };
+      this.bdTex = { day: [mk('assets/env/simple_day.jpg', T.MirroredRepeatWrapping, -12), mk('assets/env/hero_day.png', T.ClampToEdgeWrapping, -1)], evening: [mk('assets/env/simple_eve.jpg', T.MirroredRepeatWrapping, -12), mk('assets/env/hero_eve.png', T.ClampToEdgeWrapping, -1)] };
+      const H = 171.8, g = new T.Group(); g.position.set(0, 30.5, 1.25); g.renderOrder = -1;
+      const a = new T.Mesh(new T.CylinderGeometry(300, 300, H, 128, 1, true), new T.MeshBasicMaterial({ map: this.bdTex.day[0], side: T.BackSide, fog: false, depthWrite: false }));
+      const ARC = 0.6244, b = new T.Mesh(new T.CylinderGeometry(296, 296, H, 64, 1, true, -ARC / 2, ARC), new T.MeshBasicMaterial({ map: this.bdTex.day[1], side: T.BackSide, fog: false, depthWrite: false, transparent: true }));
+      a.renderOrder = -2; b.renderOrder = -1; g.add(a, b); this.bdParts = [a, b]; this.backdrop = g; this.scene.add(g);
+      this.skyCol = { day: '#c9d5e9', evening: '#394468', dusk: '#394468' }; this.fieldCol = { day: '#51532f', evening: '#1d201a' };
     }
     _bg() {
       const L = LOOKS[this.look];
-      const out = this.mode !== 'doll'; if (this.backdrop) { this.backdrop.visible = out; this.backdrop.material.map = this.bdTex[this.look === 'day' ? 'day' : 'evening']; this.backdrop.position.y = 30.5 + (this.mode === 'walk' && this.o ? this.o.y * 0.0 : 0); }
+      const out = this.mode !== 'doll'; if (this.backdrop) { this.backdrop.visible = out; const tx = this.bdTex[this.look === 'day' ? 'day' : 'evening']; this.bdParts[0].material.map = tx[0]; this.bdParts[1].material.map = tx[1]; if (this.site && this.site.groundMat) this.site.groundMat.color.set(this.look === 'day' ? '#98AA6C' : '#3C4636'); this.backdrop.position.y = 30.5 + (this.mode === 'walk' && this.o ? this.o.y * 0.0 : 0); }
       if (out) { this.scene.background = new T.Color(this.skyCol[this.look]); this.scene.backgroundIntensity = 1; }
       else { this.scene.background = new T.Color(this.mode === 'doll' ? '#0b0d11' : L.fog); this.scene.backgroundIntensity = 1; }
-      this.scene.fog.color.set(L.fog); this.scene.fog.near = this.mode === 'doll' ? 500 : 90; this.scene.fog.far = this.mode === 'doll' ? 2000 : 520;
+      this.scene.fog.color.set(this.look === 'day' ? '#6E7C52' : '#1C2121'); this.scene.fog.near = this.mode === 'doll' ? 500 : 62; this.scene.fog.far = this.mode === 'doll' ? 2000 : 128;
     }
     _composer(w, h) {
       this.composer = null; this.ao = null; this.bloom = null;
@@ -96,8 +99,8 @@
       if (this.selBox) { this.scene.remove(this.selBox); this.selBox = null; }
       this.ext.visible = true; this.site.group.visible = true; this.site.plotLite.visible = false;
       this.mode = 'ext'; this.look = this.night ? 'evening' : 'day'; this.lights = this.extLights; this.camera.fov = 40; this._offset(); this.camera.updateProjectionMatrix();
-      this.home = { theta: 2.62, phi: 1.36, radius: this._fitR(11.5, 40) }; this.goal.target.set(0, 6.4, 1.25); Object.assign(this.goal, this.home);
-      if (!this._extSeen) { this._extSeen = true; Object.assign(this.orbit, { theta: 1.85, phi: 1.18, radius: this.home.radius * 1.5 }); this.orbit.target.set(0, 6.4, 1.25); }
+      this.home = { theta: 3.1416, phi: 1.36, radius: this._fitR(11.5, 40) }; this.goal.target.set(0, 6.4, 1.25); Object.assign(this.goal, this.home);
+      if (!this._extSeen) { this._extSeen = true; Object.assign(this.orbit, { theta: 2.45, phi: 1.18, radius: this.home.radius * 1.5 }); this.orbit.target.set(0, 6.4, 1.25); }
       this.tween = null; this.diving = null; this._applyLook(); this._bg(); this.renderer.domElement.style.cursor = 'grab'; this.idle = 0;
     }
     /** screen position (px) beside a level, for the hover card */
@@ -160,8 +163,8 @@
       const c = this.mode === 'ext' ? new T.Vector3(0, 4, 1) : this.centre || new T.Vector3(); this.sun.target.position.copy(c); this.sun.position.set(c.x + L.sunPos[0], c.y + L.sunPos[1], c.z + L.sunPos[2]);
       for (const k in m) if ('envMapIntensity' in m[k]) m[k].envMapIntensity = m[k].userData.baseEnv * L.env;
       this.scene.traverse((o) => { const mt = o.material; if (mt && !Array.isArray(mt) && 'envMapIntensity' in mt && (!mt.userData || mt.userData.baseEnv === undefined)) mt.envMapIntensity = L.env; });
-      (this.lights || []).forEach((l) => { l.intensity = l.userData.base * (l.userData.accent ? L.accent : L.lights); });
-      m.onyx.emissiveIntensity = L.onyx; m.shade.emissiveIntensity = L.shade; if (this.bloom) this.bloom.strength = L.bloom;
+      const boost = this.mode === 'ext' && this.look !== 'day' ? 2.6 : 1; (this.lights || []).forEach((l) => { l.intensity = l.userData.base * (l.userData.accent ? L.accent : L.lights) * boost; });
+      m.onyx.emissiveIntensity = L.onyx; m.villaGlass.emissiveIntensity = this.look === 'day' ? 0 : 0.16; m.shade.emissiveIntensity = L.shade; if (this.bloom) this.bloom.strength = L.bloom;
     }
     setTheme(th) { B.applyTheme(th); }
 
