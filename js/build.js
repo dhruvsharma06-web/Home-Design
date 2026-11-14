@@ -509,12 +509,12 @@
     const m = mats(), g = new T.Group(), s = new T.Group(); g.add(s);
     const rnd = (() => { let a = 1337; return () => ((a = (a * 16807) % 2147483647) / 2147483647); })();
     const gm = m.grass.clone(); gm.color = new T.Color('#8EA070'); gm.userData = { tile: 2.4 };
-    const ground = new T.Mesh(new T.CircleGeometry(420, 64), gm); { const uv = ground.geometry.attributes.uv; for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * 300, uv.getY(i) * 300); }
+    const ground = new T.Mesh(new T.CircleGeometry(75, 64), gm); { const uv = ground.geometry.attributes.uv; for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * 55, uv.getY(i) * 55); }
     ground.rotation.x = -Math.PI / 2; ground.position.set(4.9, -0.06, 9.5); ground.receiveShadow = true; ground.userData.keep = true; g.add(ground);
     const sync = () => { gm.map = m.grass.map; gm.normalMap = m.grass.normalMap; gm.needsUpdate = true; }; setTimeout(sync, 1500); setTimeout(sync, 6000);
     // road + footpath on the north
-    s.add(box(300, 0.06, 6.5, m.asphalt, 5, -0.08, -4.4, false)); s.add(box(300, 0.1, 1.1, m.paver, 5, -0.08, -0.6, false)); s.add(box(300, 0.1, 1.1, m.paver, 5, -0.08, -8.2, false));
-    for (let x = -140; x < 150; x += 6) s.add(box(2.4, 0.005, 0.12, m.ceramic, x, -0.018, -4.4, false));
+    s.add(box(140, 0.06, 6.5, m.asphalt, 5, -0.08, -4.4, false)); s.add(box(140, 0.1, 1.1, m.paver, 5, -0.08, -0.6, false)); s.add(box(140, 0.1, 1.1, m.paver, 5, -0.08, -8.2, false));
+    for (let x = -64; x < 70; x += 6) s.add(box(2.4, 0.005, 0.12, m.ceramic, x, -0.018, -4.4, false));
     // neighbouring villas
     const villa = (x, z, w, d, fl, rot) => { const v = new T.Group(); const hh = fl * 3.1;
       v.add(box(w, hh, d, fl % 2 ? m.villa : m.villa2, 0, 0, 0)); v.add(box(w + 0.6, 0.25, d + 0.6, m.villa, 0, hh, 0));
@@ -532,7 +532,7 @@
       for (let i = 0; i <= seg; i++) { const t = (i / seg) * Math.PI * 2, c = Math.cos(t), sn = Math.sin(t); pos.push(c * (R + 90), -2, sn * (R + 90), c * R, hs[i], sn * R, c * (R - 70), -2, sn * (R - 70)); }
       for (let i = 0; i < seg; i++) { const k = i * 3; idx.push(k, k + 1, k + 3, k + 1, k + 4, k + 3, k + 1, k + 2, k + 4, k + 2, k + 5, k + 4); }
       const geo = new T.BufferGeometry(); geo.setAttribute('position', new T.Float32BufferAttribute(pos, 3)); geo.setIndex(idx); geo.computeVertexNormals(); const me = new T.Mesh(geo, mat); me.position.set(4.9, 0, 9.5); me.userData.keep = true; g.add(me); };
-    ridge(300, 62, m.hill, 3); ridge(390, 105, m.hill2, 11);
+
     // plot seen from above (used when you are on an upper floor)
     const lite = new T.Group(); lite.userData.keep = true;
     lite.add(box(9.75, 0.05, 5.75, m.limeGrey, 4.875, -0.03, 2.875, false)); lite.add(box(9.75, 0.05, 13.25, m.grass, 4.875, -0.03, 12.375, false));
