@@ -280,3 +280,8 @@ body.walk .fv-panel { opacity: 0; transform: translateX(-30px); pointer-events: 
 .land .eve { opacity: 0; transition: opacity 1.2s ease; }
 .land.night .eve { opacity: 1; }
 @media (max-width: 900px) { .land-ctl { top: 60px; right: 12px; flex-wrap: wrap; justify-content: flex-end; } }
+
+/* keep the level rail usable while the AI guide or customise panel is open */
+body:has(.side:not([hidden])) .fv-rail { right: 384px; transition: right .3s ease; }
+body:has(.side:not([hidden])) .liftchip { right: 436px; }
+@media (max-width: 900px) { body:has(.side:not([hidden])) .fv-rail { right: 10px; top: 24%; } }

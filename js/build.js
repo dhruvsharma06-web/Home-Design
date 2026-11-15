@@ -6,15 +6,15 @@
   const H = 2.9, SLAB = 0.3;
   const ROT = { n: 0, s: Math.PI, e: -Math.PI / 2, w: Math.PI / 2 };
   const MOVABLE = new Set(['bed', 'nightstand', 'armchair', 'lounge', 'sofa', 'coffee', 'rug', 'dining', 'stool', 'chair', 'desk', 'bench', 'plant', 'floorlamp', 'sidetable', 'lounger', 'aasan', 'verna', 'boulder', 'tv']);
-  const NOCOLLIDE = new Set(['rug', 'aasan', 'curtain', 'stepstones', 'tankcover', 'vineplanter', 'fins', 'screen', 'pergola', 'tank', 'pitsteps', 'floatsteps', 'shearwall', 'gate', 'oshower', 'skylight']);
-  const FACADE = new Set(['vineplanter', 'fins', 'planter', 'pergola', 'poolflush', 'skylight', 'verna', 'gate', 'palm', 'shrub', 'bamboo', 'shearwall', 'fountain', 'greenwall', 'boulder', 'stepstones', 'tank', 'pitbench', 'firetable', 'pitsteps', 'screen', 'lounger', 'bench', 'floatsteps', 'tankcover', 'onyx', 'curtain', 'sofa', 'bed', 'dining', 'tv', 'armchair', 'wardrobe', 'counter', 'island', 'tall', 'mandir', 'lounge', 'coffee', 'rug', 'floorlamp', 'plant', 'sidetable', 'nightstand', 'desk', 'chair', 'fridge', 'stool']);
+  const NOCOLLIDE = new Set(['shower', 'loft', 'planterhole', 'tankfins', 'pergola3', 'rug', 'aasan', 'curtain', 'stepstones', 'tankcover', 'vineplanter', 'fins', 'screen', 'pergola', 'tank', 'pitsteps', 'floatsteps', 'shearwall', 'gate', 'oshower', 'skylight']);
+  const FACADE = new Set(['gate2', 'gatepillar', 'fountain2', 'vgarden', 'planterhole', 'pittable', 'pergola3', 'tankfins', 'vineplanter', 'fins', 'planter', 'pergola', 'poolflush', 'skylight', 'verna', 'gate', 'palm', 'shrub', 'bamboo', 'shearwall', 'fountain', 'greenwall', 'boulder', 'stepstones', 'tank', 'pitbench', 'firetable', 'pitsteps', 'screen', 'lounger', 'bench', 'floatsteps', 'tankcover', 'onyx', 'curtain', 'sofa', 'bed', 'dining', 'tv', 'armchair', 'wardrobe', 'counter', 'island', 'tall', 'mandir', 'lounge', 'coffee', 'rug', 'floorlamp', 'plant', 'sidetable', 'nightstand', 'desk', 'chair', 'fridge', 'stool']);
   const roomPts = (r) => r.poly || [[r.r[0], r.r[1]], [r.r[2], r.r[1]], [r.r[2], r.r[3]], [r.r[0], r.r[3]]];
   const rectPts = (r) => [[r[0], r[1]], [r[2], r[1]], [r[2], r[3]], [r[0], r[3]]];
   const bbox = (pts) => { const xs = pts.map((p) => p[0]), ys = pts.map((p) => p[1]); return [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)]; };
 
   /* ============================ theme ============================ */
   const PRESETS = {
-    'Render': { wall: '#EFEBE4', floor: 'marble', fabric: '#D8CFC2', accent: '#8F9A86', joinery: '#F1EEE8', kitchen: '#8B8778', fins: '#A8774D', frame: '#232427' },
+    'Render': { wall: '#F3F0E8', floor: 'marble', fabric: '#E6E1D8', accent: '#C9C2B6', joinery: '#F3F0E8', kitchen: '#A9ACAE', fins: '#A8774D', frame: '#B9AC9B' },
     'Greige & White': { wall: '#F1EEE8', floor: 'marble', fabric: '#CFC6BA', accent: '#A89D8F', joinery: '#F4F1EB', kitchen: '#B4AA9B', fins: '#B9AC9B', frame: '#8D9095' },
     'Olive & Oak': { wall: '#EDE8DE', floor: 'oak', fabric: '#E3DACB', accent: '#70745F', joinery: '#EFEADF', kitchen: '#70745F', fins: '#9A7650', frame: '#2B2C2A' },
     'Stone & Charcoal': { wall: '#E9E7E2', floor: 'stone', fabric: '#B9B2A8', accent: '#5B6068', joinery: '#E6E3DD', kitchen: '#3F4246', fins: '#6E6A64', frame: '#1F2022' },
@@ -26,7 +26,7 @@
     stone: { label: 'Grey limestone', color: '#B4AFA6', c: 'stone_c.jpg', n: 'stone_n.jpg', rough: 0.7, rep: 1.5 },
   };
   let THEME = { ...PRESETS.Render };
-  try { Object.assign(THEME, JSON.parse(localStorage.getItem('b4-theme') || '{}')); } catch (e) {}
+  try { Object.assign(THEME, JSON.parse(localStorage.getItem('b4-theme3') || '{}')); } catch (e) {}
 
   /* ============================ textures + materials ============================ */
   const TL = new T.TextureLoader(), texCache = {};
@@ -44,7 +44,7 @@
     const tx = (color, o, maps, tile, rep) => { const m = std(color, o); m.userData.tile = tile; if (maps.c) setMap(m, 'map', maps.c, true, rep); if (maps.n) setMap(m, 'normalMap', maps.n, false, rep); return m; };
     M = {
       marble: tx('#E2D2B8', { roughness: 0.3 }, {}, 1.8),
-      wall: tx('#EFEBE4', { roughness: 0.95 }, { n: 'plaster_n.jpg' }, 2.2),
+      wall: tx('#F3F0E8', { roughness: 0.95 }, { n: 'plaster_n.jpg' }, 2.2),
       ceiling: std('#F3F0EA', { roughness: 1 }),
       kota: tx('#87705C', { roughness: 0.62 }, { c: 'stone_c.jpg', n: 'stone_n.jpg' }, 1.2),
       kotaPol: tx('#8F7B68', { roughness: 0.3 }, { c: 'stone_c.jpg' }, 1.2),
@@ -64,9 +64,16 @@
       grass: tx('#A9BA8A', { roughness: 1 }, { c: 'grass_c.jpg', n: 'grass_n.jpg' }, 1.6),
       granite: tx('#343436', { roughness: 0.18 }, { c: 'granite_c.jpg' }, 1),
       lacquer: std('#F1EEE8', { roughness: 0.4 }),
-      olive: std('#8B8778', { roughness: 0.5 }),
+      olive: std('#A9ACAE', { roughness: 0.5 }),
       fins: tx('#A8774D', { roughness: 0.55 }, { c: 'wood_c.jpg', n: 'wood_n.jpg' }, 1.0),
-      frame: std('#232427', { roughness: 0.45, metalness: 0.6 }),
+      frame: std('#B9AC9B', { roughness: 0.45, metalness: 0.4 }),
+      beige: tx('#DCCCAA', { roughness: 0.85 }, { n: 'stone_n.jpg' }, 1.5),
+      stairBeige: tx('#DDD0B8', { roughness: 0.6 }, { c: 'stone_c.jpg', n: 'stone_n.jpg' }, 1.2),
+      shineGrey: std('#8D9095', { roughness: 0.45, metalness: 0.35 }),
+      pillar: std('#ADA69C', { roughness: 0.85 }),
+      statuario: tx('#F4F2EE', { roughness: 0.22 }, { c: 'marble_c.jpg', n: 'marble_n.jpg' }, 2.4),
+      frosted: new T.MeshPhysicalMaterial({ color: '#F4F4F2', transparent: true, opacity: 0.72, roughness: 0.55, metalness: 0, side: T.DoubleSide, depthWrite: false }),
+      soil: std('#4A3B2C', { roughness: 1 }),
       steel: std('#C4C6C8', { roughness: 0.32, metalness: 0.9 }),
       brass: std('#BFA066', { roughness: 0.35, metalness: 0.85 }),
       dark: std('#2a2927', { roughness: 0.5, metalness: 0.3 }),
@@ -107,7 +114,7 @@
     m.fabricDark.color.set(THEME.fabric).multiplyScalar(0.72); m.rug.color.set(THEME.fabric).lerp(new T.Color('#ffffff'), 0.15);
     const F = FLOORS_T[THEME.floor] || FLOORS_T.marble; m.marble.color.set(F.color); m.marble.roughness = F.rough;
     setMap(m.marble, 'map', F.c, true, F.rep); setMap(m.marble, 'normalMap', F.n, false, F.rep);
-    if (!quiet) try { localStorage.setItem('b4-theme', JSON.stringify(THEME)); } catch (e) {}
+    if (!quiet) try { localStorage.setItem('b4-theme3', JSON.stringify(THEME)); } catch (e) {}
   }
 
   /* ============================ geometry helpers ============================ */
@@ -213,8 +220,8 @@
       case 'rug': g.add(box(w, 0.012, d, m.rug, 0, 0.002, 0, false)); break;
       case 'aasan': g.add(box(w, 0.03, d, m.sage, 0, 0.002, 0, false)); break;
       case 'tv': {
-        // media wall: timber back panel + low console (real cabinet model) + screen
-        g.add(box(w + 0.5, 2.4, 0.04, m.wood, 0, 0.15, -hd + 0.02)); g.add(box(w + 0.5, 0.015, 0.03, m.glow, 0, 2.56, -hd + 0.05, false));
+        // media wall: timber back panel + low console (real cabinet model) + screen; f.low = free-standing unit with no back panel
+        if (!f.low) { g.add(box(w + 0.5, 2.4, 0.04, m.wood, 0, 0.15, -hd + 0.02)); g.add(box(w + 0.5, 0.015, 0.03, m.glow, 0, 2.56, -hd + 0.05, false)); }
         const con = new T.Group(); con.userData.self = g; con.add(rbox(w, 0.42, d * 0.85, 0.015, m.wood, 0, 0.12, 0)); for (const s of [-1, 1]) con.add(box(0.03, 0.12, d * 0.6, m.dark, s * (hw - 0.15), 0, 0)); con.position.z = 0.04; g.add(con);
         if (!lite) useModel(con, 'modern_wooden_cabinet', { w, d: d * 0.95 });
         g.add(box(Math.min(1.45, w * 0.8), 0.82, 0.03, m.dark, 0, 0.95, -hd + 0.06)); g.add(box(Math.min(1.45, w * 0.8) - 0.03, 0.79, 0.005, m.carGlass, 0, 0.965, -hd + 0.078, false));
@@ -278,7 +285,7 @@
       case 'greenwall': { g.add(box(w, 2.5, d, m.dark, 0, 0, 0)); for (let r = 0; r < 7; r++) for (let c = 0; c < Math.round(d / 0.34); c++) if ((r + c) % 2 === 0) g.add(blob(0.17, (r + c) % 4 ? m.leaf : m.leaf2, hw + 0.06, 0.3 + r * 0.33, -hd + 0.17 + c * 0.34, 0.9)); break; }
       case 'planter': { g.add(box(w, 0.42, d, m.wall, 0, 0, 0)); const n = Math.max(2, Math.round(Math.max(w, d) / 0.34)), r = Math.min(w, d) * (f.dense ? 0.5 : 0.6); for (let i = 0; i < n; i++) { const t = (i + 0.5) / n - 0.5; g.add(blob(r * (0.8 + ((i * 29) % 10) / 25), [m.leaf, m.leaf2, m.leaf3][i % 3], w >= d ? t * w : 0, 0.5 + ((i * 13) % 10) / 50, w >= d ? 0 : t * d, 1.15)); } break; }
       case 'vineplanter': { g.add(box(w, 0.4, d, m.wall, 0, 0, 0)); const n = Math.round(w / 0.26); for (let i = 0; i < n; i++) { const x = -hw + (w / n) * (i + 0.5); g.add(blob(0.2, i % 2 ? m.leaf : m.leaf2, x, 0.5, 0)); const len = 0.5 + ((i * 37) % 9) / 8; g.add(box(0.07, len, 0.06, i % 2 ? m.leaf3 : m.leaf, x + 0.04, -len + 0.1, (f.y < 0 ? -1 : 1) * (hd - 0.02), false)); } break; }
-      case 'fins': { const n = Math.round(d / 0.2); for (let i = 0; i < n; i++) g.add(box(w * 0.9, H + SLAB, 0.045, m.fins, 0, -SLAB, -hd + (d / n) * (i + 0.5))); break; }
+      case 'fins': { const n = Math.round(d / 0.2), fh = f.h75 ? 0.75 * H : H + SLAB, fy = f.h75 ? 2.4 - 0.75 * H : -SLAB; for (let i = 0; i < n; i++) g.add(box(w * 0.9, fh, 0.045, m.fins, 0, fy, -hd + (d / n) * (i + 0.5))); break; }
       case 'curtain': { const n = Math.max(4, Math.round(w / 0.14)); for (let i = 0; i < n; i++) g.add(box(w / n + 0.01, H - 0.1, 0.015, m.sheer, -hw + (w / n) * (i + 0.5), 0.03, i % 2 ? 0.03 : -0.03, false)); g.add(box(w, 0.04, 0.09, m.wall, 0, H - 0.05, 0, false)); break; }
       case 'floorlamp': { g.add(cyl(0.14, 0.02, m.dark, 0, 0, 0)); g.add(cyl(0.01, 1.48, m.brass, 0, 0, 0, 8)); const s = new T.Mesh(new T.CylinderGeometry(0.14, 0.19, 0.28, 28, 1, true), m.shade); s.position.y = 1.56; g.add(s); g.userData.light = { y: 1.45, color: '#FFD3A0', i: 2.2 }; break; }
       case 'mandir': {
@@ -295,9 +302,7 @@
       }
       case 'onyx': {
         const hh = f.h || H, base = f.upper ? -(H + SLAB) : 0, total = f.upper ? hh + H + SLAB : hh;
-        g.add(box(w, total, d, m.onyx, 0, base, 0)); for (let i = 1; i < 3; i++) g.add(box(0.008, total, d + 0.006, m.brass, -hw + (w / 3) * i, base, 0, false));
-        g.add(box(w, 0.03, 0.05, m.glow, 0, base + total - 0.05, hd + 0.03, false)); g.add(box(w, 0.03, 0.05, m.glow, 0, base + 0.02, hd + 0.03, false));
-        g.userData.light = { y: (f.upper ? 0 : total / 2) + 0.4, z: 0.9, color: '#FFD6A0', i: 6 };
+        g.add(box(w, total, d, m.statuario, 0, base, 0));                                   // white marble, two storeys, no backlight
         break;
       }
       case 'liftcar': {
@@ -339,9 +344,53 @@
         const tex = new T.CanvasTexture(c); tex.colorSpace = T.SRGBColorSpace; g.add(box(w + 0.1, 1.6, 0.03, m.dark, 0, 0.75, 0)); const s = new T.Mesh(new T.PlaneGeometry(w, 1.46), new T.MeshBasicMaterial({ map: tex })); s.position.set(0, 1.55, 0.02); s.userData.keep = true; g.add(s);
         break;
       }
-      case 'pitbench': g.add(box(w, 0.4, d, m.limeYellow, 0, 0, 0)); g.add(rbox(w - 0.04, 0.12, d - 0.12, 0.04, m.fabric, 0, 0.4, 0.05)); g.add(rbox(w - 0.04, 0.36, 0.16, 0.06, m.fabric, 0, 0.46, -hd + 0.1)); g.add(rbox(0.36, 0.3, 0.12, 0.05, m.sage, -hw * 0.5, 0.56, -hd + 0.24)); break;
+      case 'pitbench': g.add(box(w, 0.4, d, m.marble, 0, 0, 0)); g.add(rbox(w - 0.04, 0.12, d - 0.12, 0.04, m.fabric, 0, 0.4, 0.05)); g.add(rbox(w - 0.04, 0.36, 0.16, 0.06, m.fabric, 0, 0.46, -hd + 0.1)); g.add(rbox(0.36, 0.3, 0.12, 0.05, m.sage, -hw * 0.5, 0.56, -hd + 0.24)); break;
       case 'firetable': g.add(box(w, 0.34, d, m.limeGrey, 0, 0, 0)); g.add(box(w - 0.24, 0.02, d - 0.24, m.dark, 0, 0.34, 0, false)); for (let i = 0; i < 6; i++) { const fl = new T.Mesh(new T.ConeGeometry(0.05, 0.2 + (i % 3) * 0.05, 8), m.flame); fl.position.set(-w * 0.3 + i * (w * 0.12), 0.46, 0); g.add(fl); } g.userData.light = { y: 0.8, color: '#FFAE60', i: 6 }; break;
-      case 'pitsteps': g.add(box(w, 0.15, d, m.deck, 0, 0, 0)); g.add(box(w, 0.3, d / 2, m.deck, 0, 0, -d / 4)); break;
+      case 'pitsteps': g.add(box(w, 0.15, d, m.marble, 0, 0, 0)); g.add(box(w, 0.3, d / 2, m.marble, 0, 0, -d / 4)); break;
+      case 'pittable': g.add(box(w, 0.36, d, m.marble, 0, 0, 0)); break;
+      case 'gatepillar': g.add(box(w, 1.6, d, m.shineGrey, 0, 0, 0)); break;
+      case 'gate2': {                                                                       // two 4.5 ft metal gates, Shine Grey
+        const lw = w / 2;
+        for (const s of [-1, 1]) { const cx = s * lw / 2; g.add(box(lw - 0.02, 0.06, 0.06, m.shineGrey, cx, 0.08, 0)); g.add(box(lw - 0.02, 0.06, 0.06, m.shineGrey, cx, 1.44, 0)); for (const e of [-1, 1]) g.add(box(0.06, 1.42, 0.06, m.shineGrey, cx + e * (lw / 2 - 0.04), 0.08, 0)); for (let x = -lw / 2 + 0.12; x < lw / 2 - 0.08; x += 0.11) g.add(box(0.025, 1.36, 0.03, m.shineGrey, cx + x, 0.11, 0)); }
+        break;
+      }
+      case 'fountain2': {                                                                   // free-standing low marble fountain, water curtain into a basin
+        g.add(box(w, 0.45, d, m.marble, 0, 0, 0)); g.add(box(w - 0.12, 0.02, d - 0.12, m.water, 0, 0.42, 0, false));
+        g.add(box(0.12, 1.2, d * 0.7, m.marble, -hw + 0.18, 0.45, 0)); g.add(box(0.012, 0.95, d * 0.66, m.water, -hw + 0.25, 0.47, 0, false));
+        g.userData.light = { y: 0.6, x: 0.1, color: '#FFE2B8', i: 2 }; break;
+      }
+      case 'vgarden': {                                                                     // vertical garden panel, greenery on both faces
+        g.add(box(w, 2.6, d * 0.5, m.dark, 0, 0, 0));
+        for (let r = 0; r < 8; r++) for (let c = 0; c < Math.max(2, Math.round(w / 0.3)); c++) for (const s of [-1, 1]) g.add(blob(0.15, (r + c) % 3 ? m.leaf : m.leaf2, -hw + 0.15 + c * ((w - 0.3) / Math.max(1, Math.round(w / 0.3) - 1)), 0.25 + r * 0.31, s * d * 0.45, 0.9));
+        break;
+      }
+      case 'planterhole': {                                                                 // flush planter cut-out in the stilt floor, low ground cover
+        g.add(box(w, 0.012, d, m.soil, 0, 0.003, 0, false));
+        const n = Math.max(2, Math.round(d / 0.3)); for (let i = 0; i < n; i++) for (let j = 0; j < 2; j++) g.add(blob(0.13, (i + j) % 2 ? m.leaf : m.leaf2, -hw / 2 + j * hw, 0.08, -hd + 0.15 + i * ((d - 0.3) / Math.max(1, n - 1)), 0.55));
+        break;
+      }
+      case 'jacuzzi': {
+        g.add(rbox(w, 0.58, d, 0.08, m.ceramic, 0, 0, 0)); g.add(rbox(w - 0.16, 0.02, d - 0.16, 0.06, m.water, 0, 0.5, 0));
+        for (const s of [-1, 1]) g.add(cyl(0.025, 0.02, m.steel, s * w * 0.3, 0.52, -hd + 0.1, 12)); g.add(cyl(0.012, 0.3, m.steel, -hw + 0.12, 0.58, 0, 8));
+        break;
+      }
+      case 'loft': {                                                                        // storage loft at 7 ft (2.13 m) above the washroom
+        g.add(box(w, 0.05, d, m.lacquer, 0, 2.13, 0)); g.add(box(w, H - 2.18, 0.03, m.lacquer, 0, 2.18, hd - 0.015, false)); g.add(box(0.03, H - 2.18, d, m.lacquer, hw - 0.015, 2.18, 0, false));
+        g.add(box(0.004, H - 2.22, 0.004, m.dark, 0, 2.2, hd + 0.001, false));
+        break;
+      }
+      case 'pergola3': {                                                                    // fixed to the stair-head wall at its north end; three posts
+        for (const [x, z] of [[hw - 0.06, -hd + 3.4], [hw - 0.06, hd - 0.06], [-hw + 0.06, hd - 0.06]]) g.add(box(0.12, 2.6, 0.12, m.fins, x, 0, z));
+        for (const s of [-1, 1]) { g.add(box(w, 0.18, 0.12, m.fins, 0, 2.6, s * (hd - 0.06))); g.add(box(0.12, 0.18, d, m.fins, s * (hw - 0.06), 2.6, 0)); }
+        for (let z = -hd + 0.15; z < hd; z += 0.22) g.add(box(w - 0.1, 0.12, 0.045, m.fins, 0, 2.66, z));
+        break;
+      }
+      case 'tankfins': {                                                                    // fin screen on the stair-head roof, rising above the two tanks
+        const y0 = H + SLAB, fh = 1.7;
+        for (let x = -hw; x <= hw + 0.001; x += 0.16) { g.add(box(0.05, fh, 0.12, m.fins, x, y0, -hd)); g.add(box(0.05, fh, 0.12, m.fins, x, y0, hd)); }
+        for (let z = -hd + 0.16; z < hd - 0.08; z += 0.16) { g.add(box(0.12, fh, 0.05, m.fins, -hw, y0, z)); g.add(box(0.12, fh, 0.05, m.fins, hw, y0, z)); }
+        break;
+      }
       case 'skylight': g.add(box(w + 0.24, 0.3, 0.12, m.wall, 0, 0, -hd)); g.add(box(w + 0.24, 0.3, 0.12, m.wall, 0, 0, hd)); g.add(box(0.12, 0.3, d, m.wall, -hw, 0, 0)); g.add(box(0.12, 0.3, d, m.wall, hw, 0, 0)); g.add(box(w, 0.02, d, m.glass, 0, 0.3, 0, false)); break;
       case 'pergola': {
         for (const [a, b] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) g.add(box(0.1, 2.6, 0.1, m.fins, a * (hw - 0.05), 0, b * (hd - 0.05)));
@@ -360,7 +409,7 @@
         g.add(box(w - 0.6, 0.02, 0.03, m.glow, 0, -0.4, -hd + co + 0.03, false)); g.userData.light = { y: -0.3, color: '#BFEFFF', i: 5 };
         break;
       }
-      case 'tank': g.add(cyl(w / 2, 1.1, m.pot, 0, f.onRoof ? H + 0.45 : 0, 0, 24)); break;
+      case 'tank': g.add(cyl(w / 2, 1.1, m.pot, 0, f.onRoof ? H + SLAB : 0, 0, 24)); break;
       default: g.add(box(w, 0.5, d, m.fabric, 0, 0, 0));
     }
     g.rotation.y = g.userData.rot !== undefined ? g.userData.rot : ROT[face];
@@ -379,6 +428,7 @@
     // black slim frames, tall clear panes — as in the exterior render
     const glaze = (y0, hgt, pane) => {
       g.add(box(len, hgt, 0.012, m.glass, 0, y0, 0, false));
+      if (o.frameless) return;                                                            // double height: frameless glass
       g.add(box(len, 0.06, 0.08, m.frame, 0, y0, 0, false)); g.add(box(len, 0.06, 0.08, m.frame, 0, y0 + hgt - 0.06, 0, false));
       const n = Math.max(1, Math.round(len / pane));
       for (let i = 0; i <= n; i++) g.add(box(i === 0 || i === n ? 0.06 : 0.04, hgt, 0.08, m.frame, -len / 2 + (len / n) * i, y0, 0, false));
@@ -387,16 +437,22 @@
     if (t === 'w') { g.add(box(len + (ext ? th : 0), hh, th, m.wall, 0, 0, 0)); if (!ext && floor.id !== 'g') { g.add(box(len, 0.08, th + 0.02, m.lacquer, 0, 0, 0, false)); } }
     else if (t === 'g') glaze(0, hh, 1.5);
     else if (t === 'gp') { g.add(box(len, H, 0.012, m.glass, 0, 0, 0, false)); g.add(box(len, 0.03, 0.04, m.frame, 0, H - 0.03, 0, false)); }
+    else if (t === 'gpf') { g.add(box(len, H, 0.014, m.frosted, 0, 0, 0, false)); g.add(box(len, 0.03, 0.04, m.frame, 0, H - 0.03, 0, false)); }
     else if (t === 'win') { const s = o.s || 0.9, hd = o.h || 2.4; g.add(box(len, s, th, m.wall, 0, 0, 0)); g.add(box(len, H - hd, th, m.wall, 0, hd, 0)); glaze(s, hd - s, 1.3); g.add(box(len, 0.03, th + 0.06, m.marble, 0, s - 0.03, 0, false)); }
     else if (t === 'd') { g.add(box(len, H - 2.15, th, m.wall, 0, 2.15, 0)); if (len < 1.3 && floor.id !== 'g' && !(floor.openAir && floor.id === 't' && x1 === 1.38) && !(y1 === y2 && Math.abs(y1 - 13.85) < 0.01)) { for (const s of [-1, 1]) g.add(box(0.05, 2.15, th + 0.04, m.wood, s * (len / 2 - 0.025), 0, 0, false)); g.add(box(len, 0.05, th + 0.04, m.wood, 0, 2.1, 0, false));
-      const pv = new T.Group(), lw = len - 0.12; pv.position.set(-len / 2 + 0.06, 0, 0); pv.userData.keep = true;
+      const pv = new T.Group(), lw = len - 0.12; pv.position.set(-len / 2 + 0.06, 0, th / 2 + 0.025); pv.userData.keep = true;   // leaf on the wall face, so open it folds flat against the wall
       pv.add(box(lw, 2.08, 0.04, m.wood, lw / 2, 0.01, 0)); for (const s of [-1, 1]) pv.add(box(0.02, 0.02, 0.14, m.brass, lw - 0.08, 1.02, s * 0.04, false));
-      const openA = Math.PI / 2 * 0.92; pv.rotation.y = openA; pv.userData.door = { open: true, openA, target: openA, seg: { x1, y1, x2, y2, r: 0.05 } }; g.add(pv); if (DOORS) DOORS.push(pv); } }
-    else if (t === 'r') { g.add(box(len, 1.05, 0.016, m.glass, 0, 0.02, 0, false)); g.add(box(len, 0.035, 0.05, m.frame, 0, 1.07, 0, false)); g.add(box(len, 0.04, 0.05, m.frame, 0, 0, 0, false)); }
-    else if (t === 'c') { g.add(box(len, 1.25, th, m.wall, 0, 0, 0)); for (let x = -len / 2 + 0.1; x < len / 2; x += 0.14) g.add(box(0.03, 0.6, 0.05, m.fins, x, 1.25, 0, false)); g.add(box(len, 0.04, 0.07, m.fins, 0, 1.85, 0, false)); }
+      const openA = -Math.PI * 0.98; pv.rotation.y = openA; pv.userData.door = { open: true, openA, target: openA, seg: { x1, y1, x2, y2, r: 0.05 } }; g.add(pv); if (DOORS) DOORS.push(pv); } }
+    else if (t === 'r') { g.add(box(len, 1.05, 0.016, m.glass, 0, 0.02, 0, false)); g.add(box(0.04, 1.08, 0.04, m.frame, -len / 2 + 0.02, 0, 0, false)); }   // frameless glass, one thin post at the start
+    else if (t === 'c') {                                                                   // compound: 1.5 ft Shine Grey wall; metal fence above, or glass at the back (south)
+      g.add(box(len, 0.45, th, m.shineGrey, 0, 0, 0));
+      if (y1 === y2 && y1 >= floor.h - 0.01) g.add(box(len, 1.05, 0.016, m.glass, 0, 0.45, 0, false));
+      else { for (let x = -len / 2 + 0.06; x < len / 2; x += 0.12) g.add(box(0.025, 1.0, 0.025, m.shineGrey, x, 0.45, 0, false)); g.add(box(len, 0.05, 0.05, m.shineGrey, 0, 1.45, 0, false)); }
+    }
     else if (t === 'j' || t === 'jd') { if (t === 'j') { for (let x = -len / 2 + 0.03; x < len / 2; x += 0.075) g.add(box(0.03, H - 0.1, 0.06, m.fins, x, 0.04, 0)); g.add(box(len, 0.04, 0.08, m.fins, 0, 0, 0)); } g.add(box(len, 0.06, 0.08, m.fins, 0, H - 0.06, 0)); }
     g.position.set((x1 + x2) / 2, 0, (y1 + y2) / 2); g.rotation.y = -Math.atan2(y2 - y1, x2 - x1); parent.add(g);
     if (t !== 'd' && t !== 'jd') col.push({ x1, y1, x2, y2, r: th / 2 + 0.02 });
+
   }
 
   /* ============================ stairs (dog-leg, generated from the stair room) ============================ */
@@ -407,14 +463,14 @@
     const flight = (xc, dir, base, total) => {
       const rise = total / n, zS = dir > 0 ? y1 : y0 + LD;
       for (let i = 0; i < n; i++) { const z = dir > 0 ? y1 - run * (i + 0.5) : y0 + LD + run * (i + 0.5), top = base + rise * (i + 1);
-        g.add(box(wa, 0.04, run + 0.03, m.kota, xc, top - 0.04, z + (dir > 0 ? 0.015 : -0.015))); g.add(box(wa, rise - 0.04, 0.02, m.wall, xc, top - rise, z + (dir > 0 ? run / 2 - 0.01 : -run / 2 + 0.01))); }
+        g.add(box(wa, 0.04, run + 0.03, m.stairBeige, xc, top - 0.04, z + (dir > 0 ? 0.015 : -0.015))); g.add(box(wa, rise - 0.04, 0.02, m.wall, xc, top - rise, z + (dir > 0 ? run / 2 - 0.01 : -run / 2 + 0.01))); }
       const L = Math.hypot(run * n, total), ang = Math.atan2(total, run * n);
       const waist = box(wa, 0.16, L, m.wall, xc, 0, 0); waist.position.set(xc, base + total / 2 - 0.2, (y0 + LD + y1) / 2); waist.rotation.x = dir > 0 ? ang : -ang; g.add(waist);
       const rail = box(0.04, 0.05, L, m.wood, 0, 0, 0); rail.position.set(mid + (xc < mid ? -0.045 : 0.045), base + total / 2 + 0.92, (y0 + LD + y1) / 2); rail.rotation.x = dir > 0 ? ang : -ang; g.add(rail);
       for (let i = 0; i <= n; i += 2) { const z = dir > 0 ? y1 - run * i : y0 + LD + run * i; g.add(box(0.016, 0.9, 0.016, m.frame, rail.position.x, base + (total / n) * i, Math.min(y1 - 0.02, Math.max(y0 + LD + 0.02, z)), false)); }
     };
-    if (up) { flight(x0 + 0.02 + wa / 2, 1, 0, F / 2); g.add(box(x1 - x0 - 0.04, 0.16, LD, m.wall, mid, F / 2 - 0.16, y0 + LD / 2)); g.add(box(x1 - x0 - 0.04, 0.03, LD, m.kota, mid, F / 2, y0 + LD / 2)); flight(x1 - 0.02 - wa / 2, -1, F / 2, F / 2); }
-    if (down) { flight(x1 - 0.02 - wa / 2, -1, -Fd / 2, Fd / 2); g.add(box(x1 - x0 - 0.04, 0.16, LD, m.wall, mid, -Fd / 2 - 0.16, y0 + LD / 2)); g.add(box(x1 - x0 - 0.04, 0.03, LD, m.kota, mid, -Fd / 2, y0 + LD / 2));
+    if (up) { flight(x0 + 0.02 + wa / 2, 1, 0, F / 2); g.add(box(x1 - x0 - 0.04, 0.16, LD, m.wall, mid, F / 2 - 0.16, y0 + LD / 2)); g.add(box(x1 - x0 - 0.04, 0.03, LD, m.stairBeige, mid, F / 2, y0 + LD / 2)); flight(x1 - 0.02 - wa / 2, -1, F / 2, F / 2); }
+    if (down) { flight(x1 - 0.02 - wa / 2, -1, -Fd / 2, Fd / 2); g.add(box(x1 - x0 - 0.04, 0.16, LD, m.wall, mid, -Fd / 2 - 0.16, y0 + LD / 2)); g.add(box(x1 - x0 - 0.04, 0.03, LD, m.stairBeige, mid, -Fd / 2, y0 + LD / 2));
       g.add(box(0.03, 1.0, y1 - y0 - LD, m.glass, mid, 0.02, (y0 + LD + y1) / 2, false)); g.add(box(0.05, 0.04, y1 - y0 - LD, m.wood, mid, 1.02, (y0 + LD + y1) / 2, false));
       if (!up) { g.add(box(x1 - mid, 1.0, 0.03, m.glass, (mid + x1) / 2, 0.02, y0 + LD, false)); g.add(box(x1 - mid, 0.04, 0.05, m.wood, (mid + x1) / 2, 1.02, y0 + LD, false)); } }
     parent.add(g);
@@ -427,7 +483,7 @@
     const m = mats(), shell = !!opt.shell, group = new T.Group(), ceil = new T.Group(), stat = new T.Group();
     const out = { group, ceil, col: [], boxes: [], roomMeshes: [], hl: {}, items: [], lights: [], floor, doors: [] }; DOORS = shell ? null : out.doors;
     ceil.userData.keep = true; group.add(stat);
-    const matFor = (k) => ({ wet: m.kota, core: m.marble, stair: m.kota, bal: m.kotaGreen, out: m.limeYellow, pave: m.limeGrey, lawn: m.grass, pit: m.deck, terr: m.terr })[k] || m.marble;
+    const matFor = (k) => ({ wet: m.kota, core: m.marble, stair: m.stairBeige, bal: m.kotaGreen, out: m.beige, pave: m.beige, lawn: m.grass, pit: m.marble, terr: m.terr })[k] || m.marble;
     const E = floor.id === 'g' ? 0 : 0.45;                                // the 0.45 m elevation feature all round
     const outline = rectPts([-E, -E, floor.w + E, floor.h + E]);
 
@@ -446,16 +502,15 @@
       const rh = [...(r.holes || []), ...(r.kind === 'stair' && st && st.hole ? [st.hole] : [])];
       const y = r.kind === 'pit' ? -0.45 : 0.002;
       stat.add(flat(pts, rh, matFor(r.kind), y)); hit(y + 0.012);
-      if (r.kind === 'pit') { const [a, b, c, d] = r.r; for (const [p, q, s, t] of [[a, b, c, b], [c, b, c, d], [c, d, a, d], [a, d, a, b]]) { const wl = box(Math.hypot(s - p, t - q), 0.45, 0.04, m.limeYellow, (p + s) / 2, -0.45, (q + t) / 2); wl.rotation.y = -Math.atan2(t - q, s - p); stat.add(wl); } }
+      if (r.kind === 'pit') { const [a, b, c, d] = r.r; for (const [p, q, s, t] of [[a, b, c, b], [c, b, c, d], [c, d, a, d], [a, d, a, b]]) { const wl = box(Math.hypot(s - p, t - q), 0.45, 0.04, m.marble, (p + s) / 2, -0.45, (q + t) / 2); wl.rotation.y = -Math.atan2(t - q, s - p); stat.add(wl); } }
     }
     for (const wl of floor.walls) buildWall(wl, floor, stat, out.col);
 
     if (floor.dbl) { const [a, b, c, d] = floor.dbl; stat.add(box(0.12, 5.8 - H, d - b, m.wall, a, H, (b + d) / 2)); stat.add(box(0.016, 1.0, d - b - 0.2, m.glass, a + 0.07, H + SLAB + 0.05, (b + d) / 2, false)); }
     if (floor.voidR) { const [a, b, c, d] = floor.voidR, D = H + SLAB;
       stat.add(box(c - a, D, 0.012, m.glass, (a + c) / 2, -D, b, false)); stat.add(box(0.012, D, d - b, m.glass, c, -D, (b + d) / 2, false)); stat.add(box(0.12, D, d - b, m.wall, a, -D, (b + d) / 2));
-      for (let i = 0; i <= 2; i++) stat.add(box(0.05, D, 0.08, m.frame, a + ((c - a) / 2) * i, -D, b, false));
       stat.add(rbox(0.78, 0.5, 0.78, 0.1, m.linen, a + 1.0, -D + 0.1, b + 0.85)); stat.add(rbox(0.78, 0.5, 0.78, 0.1, m.linen, a + 2.4, -D + 0.1, b + 0.85)); stat.add(box(2.6, 0.012, 1.5, m.rug, (a + c) / 2, -D + 0.004, b + 1.05, false)); }
-    (floor.columns || []).forEach(([x, y]) => { stat.add(box(0.3, 3.0, 0.58, m.limeGrey, x + 0.15, 0, y + 0.29)); out.boxes.push({ x1: x, y1: y, x2: x + 0.3, y2: y + 0.58, fixed: true }); });
+    (floor.columns || []).forEach(([x, y]) => { stat.add(box(0.45, 3.0, 0.6, m.pillar, x + 0.225, 0, y + 0.3)); out.boxes.push({ x1: x, y1: y, x2: x + 0.45, y2: y + 0.6, fixed: true }); });   // wider greige pillars below, white above
 
     // ceilings / soffits (skipped for the stacked exterior, where the next slab is the ceiling)
     if (!shell) {
@@ -509,7 +564,8 @@
     const m = mats(), g = new T.Group(), s = new T.Group(); g.add(s);
     const rnd = (() => { let a = 1337; return () => ((a = (a * 16807) % 2147483647) / 2147483647); })();
     const gm = m.grass.clone(); gm.color = new T.Color('#8EA070'); gm.userData = { tile: 2.4 };
-    const ground = new T.Mesh(new T.CircleGeometry(64, 96), gm); { const uv = ground.geometry.attributes.uv; for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * 46, uv.getY(i) * 46); }
+    const gs = new T.Shape(); gs.absarc(0, 0, 64, 0, Math.PI * 2, false); const gh = new T.Path(); gh.moveTo(-4.9, -9.5); gh.lineTo(4.85, -9.5); gh.lineTo(4.85, 9.5); gh.lineTo(-4.9, 9.5); gh.lineTo(-4.9, -9.5); gs.holes.push(gh);
+    const ground = new T.Mesh(new T.ShapeGeometry(gs, 64), gm); { const uv = ground.geometry.attributes.uv; for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) / 2.8, uv.getY(i) / 2.8); }
     ground.rotation.x = -Math.PI / 2; ground.position.set(4.9, -0.06, 9.5); ground.receiveShadow = true; ground.userData.keep = true; g.add(ground);
     const sync = () => { gm.map = m.grass.map; gm.normalMap = m.grass.normalMap; gm.needsUpdate = true; }; setTimeout(sync, 1500); setTimeout(sync, 6000);
     // road + footpath on the north
@@ -565,9 +621,8 @@
     terrain(58, 900, 84, 288);
     // plot seen from above (used when you are on an upper floor)
     const lite = new T.Group(); lite.userData.keep = true;
-    lite.add(box(9.75, 0.05, 5.75, m.limeGrey, 4.875, -0.03, 2.875, false)); lite.add(box(9.75, 0.05, 13.25, m.grass, 4.875, -0.03, 12.375, false));
-    for (const [x, z, w, d] of [[4.875, 0, 9.75, 0.2], [4.875, 19, 9.75, 0.2], [0, 9.5, 0.2, 19], [9.75, 9.5, 0.2, 19]]) lite.add(box(w, 1.3, d, m.wall, x, 0, z));
-    for (let i = 0; i < 9; i++) lite.add(blob(0.5 + rnd() * 0.3, [m.leaf, m.leaf2, m.leaf3][i % 3], 0.8 + rnd() * 8, 0.5, 15 + rnd() * 3.4, 1.1));
+    lite.add(box(9.75, 0.05, 14.3, m.beige, 4.875, -0.03, 7.15, false)); lite.add(box(9.75, 0.05, 4.7, m.grass, 4.875, -0.03, 16.65, false));
+    for (const [x, z, w, d] of [[4.875, 0, 9.75, 0.2], [4.875, 19, 9.75, 0.2], [0, 9.5, 0.2, 19], [9.75, 9.5, 0.2, 19]]) lite.add(box(w, 0.45, d, m.shineGrey, x, 0, z));
     mergeStatic(lite); g.add(lite);
     mergeStatic(s);
     g.position.set(-4.875, 0, -9.5);

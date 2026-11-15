@@ -77,11 +77,11 @@
   drawCust(); $('#resetBtn').addEventListener('click', () => world.resetLayout());
 
   /* ---------- overview dashboard ---------- */
-  $('#dFacts').innerHTML = [['≈ 2,000', 'sq ft plot · 9.75 × 19 m'], ['G + 3', 'stilt, three residences, terrace'], ['6', 'bedrooms · 2BR / 4BR / 6BR stays'], ['11 × 11 ft', 'plunge pool, sunk in the terrace'], ['1.5 ft', 'sunken conversation pit'], ['2 storeys', 'backlit onyx wall']].map(([n, l]) => `<div class="gcard"><b>${n}</b><span>${l}</span></div>`).join('');
+  $('#dFacts').innerHTML = [['≈ 2,000', 'sq ft plot · 9.75 × 19 m'], ['G + 3', 'stilt, three residences, terrace'], ['6', 'bedrooms · 2BR / 4BR / 6BR stays'], ['11 × 11 ft', 'plunge pool, sunk in the terrace'], ['1.5 ft', 'sunken conversation pit'], ['2 storeys', 'white marble wall']].map(([n, l]) => `<div class="gcard"><b>${n}</b><span>${l}</span></div>`).join('');
   $('#dLevels').innerHTML = ORDER.map((id) => { const f = byId(id); return `<button class="gcard" data-id="${id}"><i>${f.short}</i><b>${f.title}</b><span>${f.tag}</span><em>Step inside →</em></button>`; }).join('');
   $('#dLevels').querySelectorAll('button').forEach((b) => b.addEventListener('click', () => { closeAll(); enterLevel(b.dataset.id); }));
-  $('#dMats').innerHTML = [['Spanish Beige marble', '#E2D2B8'], ['Warm white walls', '#EFEBE4'], ['Backlit onyx', '#EBD3A4'], ['Kota Brown', '#87705C'], ['Timber fins', '#A8774D'], ['Black granite', '#343436']].map(([l, c]) => `<div class="mrow"><i style="background:${c}"></i>${l}</div>`).join('');
-  $('#dFeat').innerHTML = ['Open-air stilt with south garden', 'Fountain in the shear-wall plane', 'Mandir in the first-floor north-east', 'Double-height retreat on the second floor', 'Lift and stair to every level', 'Flush plunge pool and pergola on the terrace'].map((x) => `<li>${x}</li>`).join('');
+  $('#dMats').innerHTML = [['Spanish Beige marble', '#E2D2B8'], ['Morning Glory White walls', '#F3F0E8'], ['White marble wall', '#F4F2EE'], ['Light beige stairs', '#DDD0B8'], ['Timber fins', '#A8774D'], ['Black granite', '#343436']].map(([l, c]) => `<div class="mrow"><i style="background:${c}"></i>${l}</div>`).join('');
+  $('#dFeat').innerHTML = ['Open-air stilt with south garden', 'North-east arrival fountain', 'Mandir in the first-floor north-east', 'Double-height retreat on the second floor', 'Lift and stair to every level', 'Flush plunge pool and pergola on the terrace'].map((x) => `<li>${x}</li>`).join('');
   $('#dTour').innerHTML = ['Turn the house, click a level', 'Dollhouse view, then walk inside', 'Drag furniture, rotate, recolour', 'Change colours and materials', 'Day and evening lighting', 'Ask the AI guide to show you around'].map((x) => `<li>${x}</li>`).join('');
 
   /* ---------- joystick ---------- */

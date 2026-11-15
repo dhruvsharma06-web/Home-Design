@@ -157,7 +157,8 @@
     _applyLook() {
       const L = LOOKS[this.look], m = B.mats();
       this.sun.intensity = L.sun; this.sun.color.set(L.sunC); this.fill.intensity = L.hemi; this.renderer.toneMappingExposure = L.exp;
-      const c = this.mode === 'ext' ? new T.Vector3(0, 4, 1) : this.centre || new T.Vector3(); this.sun.target.position.copy(c); this.sun.position.set(c.x + L.sunPos[0], c.y + L.sunPos[1], c.z + L.sunPos[2]);
+      const c = this.mode === 'ext' ? new T.Vector3(0, 4, 1) : this.centre || new T.Vector3(), sp = this.mode === 'ext' && this.look === 'day' ? [16, 24, -18] : L.sunPos; this.sun.target.position.copy(c); this.sun.position.set(c.x + sp[0], c.y + sp[1], c.z + sp[2]);
+      if (this.mode === 'ext' && this.look !== 'day') this.fill.intensity = 0.16;
       for (const k in m) if ('envMapIntensity' in m[k]) m[k].envMapIntensity = m[k].userData.baseEnv * L.env;
       this.scene.traverse((o) => { const mt = o.material; if (mt && !Array.isArray(mt) && 'envMapIntensity' in mt && (!mt.userData || mt.userData.baseEnv === undefined)) mt.envMapIntensity = L.env; });
       const boost = this.mode === 'ext' && this.look !== 'day' ? 2.6 : 1; (this.lights || []).forEach((l) => { l.intensity = l.userData.base * (l.userData.accent ? L.accent : L.lights) * boost; });
@@ -220,7 +221,7 @@
     highlight(id) { (this.roomMeshes || []).forEach((r) => { r.material.opacity = r.userData.roomId === id ? 0.2 : 0; }); }
 
     /* ---------------- furniture: select, move, rotate, add, remove, recolour ---------------- */
-    _key() { return 'b4-layout2-' + this.floor.id; }
+    _key() { return 'b4-layout3-' + this.floor.id; }
     _store() { let s = {}; try { s = JSON.parse(localStorage.getItem(this._key()) || '{}'); } catch (e) {} return { m: s.m || {}, del: s.del || [], add: s.add || [], tint: s.tint || {} }; }
     _put(s) { try { localStorage.setItem(this._key(), JSON.stringify(s)); } catch (e) {} }
     _saveItem(g) { const s = this._store(), f = g.userData.f, rec = { x: +f.x.toFixed(3), y: +f.y.toFixed(3), face: f.face || 'n' }; if (f.added) { const a = s.add.find((x) => 'a' + x.id === g.userData.idx); if (a) Object.assign(a, rec, { w: f.w, d: f.d }); } else s.m[g.userData.idx] = rec; this._put(s); }
