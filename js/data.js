@@ -55,8 +55,8 @@ const CORE = {
     [0, 9.3, 2.85, 9.3], [2.85, 9.3, 2.85, 10.35],
     // south
     [0, 15.5, 3.42, 15.5, 'g'], [3.42, 15.5, 6.75, 15.5, 'r'],
-    // kitchen → balcony: door at the right (east) end, windows for the rest
-    [3.42, 13.85, 5.75, 13.85, 'win', { s: 0.9, h: 2.4 }], [5.75, 13.85, 6.65, 13.85, 'd'], [6.65, 13.85, 6.75, 13.85],
+    // kitchen → balcony: door on the right as you face the balcony (west end), windows for the rest
+    [3.42, 13.85, 3.5, 13.85], [3.5, 13.85, 4.4, 13.85, 'd'], [4.4, 13.85, 6.75, 13.85, 'win', { s: 0.9, h: 2.4 }],
   ],
   furn: [
     { t: 'wc', x: 0.08, y: 4.85, w: 0.4, d: 0.55, face: 'w' }, { t: 'basin', x: 0.08, y: 3.9, w: 0.45, d: 0.5, face: 'w' }, { t: 'shower', x: 0.62, y: 4.72, w: 0.72, d: 0.84 },
@@ -72,7 +72,7 @@ const CORE = {
     { t: 'curtain', x: 0.12, y: 15.34, w: 3.2, d: 0.1, face: 's' },
     { t: 'fridge', x: 2.87, y: 9.45, w: 0.55, d: 0.75, face: 'w' },
     // balcony
-    { t: 'lounge', x: 3.6, y: 14.1, w: 0.72, d: 0.72, face: 's' }, { t: 'lounge', x: 4.85, y: 14.1, w: 0.72, d: 0.72, face: 's' }, { t: 'sidetable', x: 4.39, y: 14.25, w: 0.4, d: 0.4 },
+    { t: 'lounge', x: 4.75, y: 14.1, w: 0.72, d: 0.72, face: 's' }, { t: 'lounge', x: 5.92, y: 14.1, w: 0.72, d: 0.72, face: 's' }, { t: 'sidetable', x: 5.5, y: 14.25, w: 0.4, d: 0.4 },
     // façade: 5 full-height fins at the north-west corner; one 75%-height fin panel per floor on the east face, up to the window
     { t: 'fins', x: 6.8, y: 2.35, w: 0.4, d: 1.5, h75: true }, { t: 'fins', x: -0.42, y: 0.2, w: 0.4, d: 1.0 },
     // storage lofts at 7 ft over the washrooms
@@ -120,21 +120,31 @@ const EAST = (dbl, fr) => [
   [6.75, 9.95, 6.75, 10.1], [6.75, 10.1, 6.75, 12.75, 'win', { s: 1.1, h: 2.3 }], [6.75, 12.75, 6.75, 13.85], [6.75, 13.85, 6.75, 15.5, 'r'],
 ];
 
-// living, first floor: L-shaped sofa on the stair-side wall, TV on the solid east wall
+// living, first floor: free-standing sofa facing the TV on the solid east wall (keeps the Bedroom 1 door clear)
 const LIVING_F1 = [
-  { t: 'rug', x: 4.0, y: 2.9, w: 2.3, d: 2.45 },
-  { t: 'sofa', x: 3.48, y: 3.35, w: 0.92, d: 2.1, face: 'w' }, { t: 'sofa', x: 4.4, y: 4.55, w: 1.7, d: 0.92, face: 's' },
-  { t: 'coffee', x: 4.8, y: 3.15, w: 0.6, d: 1.1 },
+  { t: 'rug', x: 4.1, y: 2.2, w: 2.1, d: 2.3 },
+  { t: 'sofa', x: 4.15, y: 2.25, w: 0.92, d: 2.2, face: 'w' },
+  { t: 'coffee', x: 5.27, y: 2.85, w: 0.5, d: 1.0 },
   { t: 'tv', x: 6.27, y: 2.35, w: 0.42, d: 1.55, face: 'e' },
-  { t: 'floorlamp', x: 3.55, y: 1.55, w: 0.35, d: 0.35 },
+  { t: 'floorlamp', x: 6.3, y: 1.9, w: 0.35, d: 0.35 },
 ];
-// living, second / third floor: L-shaped sofa facing a TV wall on the north side
-const LIVING_UP = [
-  { t: 'rug', x: 3.95, y: 3.55, w: 2.55, d: 2.45 },
+// living, second floor: sofa facing the TV wall on the north side, armchair against the east wall
+const LIVING_F2 = [
+  { t: 'rug', x: 4.1, y: 3.0, w: 2.3, d: 2.6 },
   { t: 'tv', x: 4.3, y: 2.32, w: 1.8, d: 0.42, face: 'n' },
-  { t: 'sofa', x: 4.42, y: 5.4, w: 1.7, d: 0.92, face: 's' }, { t: 'sofa', x: 3.48, y: 3.95, w: 0.92, d: 2.37, face: 'w' },
-  { t: 'coffee', x: 4.8, y: 4.15, w: 1.1, d: 0.6 },
-  { t: 'floorlamp', x: 6.25, y: 2.85, w: 0.35, d: 0.35 },
+  { t: 'sofa', x: 4.2, y: 4.85, w: 2.1, d: 0.92, face: 's' },
+  { t: 'armchair', x: 5.83, y: 3.0, w: 0.82, d: 0.82, face: 'e' },
+  { t: 'coffee', x: 4.75, y: 3.6, w: 1.0, d: 0.6 },
+  { t: 'floorlamp', x: 6.25, y: 4.4, w: 0.35, d: 0.35 },
+];
+// living, third floor: sofa with its back to the east window, facing a TV on the west wall
+const LIVING_F3 = [
+  { t: 'rug', x: 4.0, y: 3.8, w: 2.3, d: 2.6 },
+  { t: 'tv', x: 3.48, y: 4.3, w: 0.42, d: 1.5, face: 'w' },
+  { t: 'sofa', x: 5.75, y: 3.95, w: 0.92, d: 2.2, face: 'e' },
+  { t: 'armchair', x: 4.3, y: 2.45, w: 0.82, d: 0.82, face: 'n' },
+  { t: 'coffee', x: 4.6, y: 4.5, w: 0.6, d: 1.1 },
+  { t: 'floorlamp', x: 6.25, y: 3.4, w: 0.35, d: 0.35 },
 ];
 
 window.FLOORS = [
@@ -145,20 +155,20 @@ window.FLOORS = [
     roof: [1.5, 3.0, 8.25, 18.5],
     orbit: { theta: -0.8, phi: 0.95 },
     spawn: { from: [8.2, 1.2, 180], to: [6.6, 9.2, 215] },
-    summary: 'The open stilt, floored in beige stone. You enter through two 4.5 ft metal gates at the north-east, past a low marble fountain. The lift and stair core sits in the middle and stays open to the stilt. Behind it a 1.5 ft sunken conversation pit, finished entirely in marble, opens to the south lawn.',
+    summary: 'The open stilt, floored in beige stone. You enter through two 4.5 ft metal gates at the north-east, past a low marble fountain. The lift and stair core sits in the middle, entered through a pair of metal doors. Behind it a 1.5 ft sunken conversation pit, finished entirely in marble, opens to the south lawn.',
     stats: [['Plot', '9.75 × 19.00 m · ≈ 2,000 sq ft'], ['Conversation pit', '1.5 ft sunken, marble'], ['Gates', '2 × 4.5 ft metal']],
     slabHoles: [[1.75, 11.15, 4.85, 13.85]],
     rooms: [
       { id: 'court', name: 'North Arrival Court', size: '9.75 × 5.75 m', r: [0, 0, 9.75, 5.75], kind: 'pave', notes: 'Beige stone paving from the gates. The 12,750 litre underground water tank sits below the court.', cam: { from: [8.9, 0.9, 1.6], to: [3.4, 4.6, 0.8] } },
-      { id: 'water', name: 'Fountain', size: 'North-east corner', r: [8.55, 3.3, 9.65, 5.6], kind: 'pave', notes: 'A free-standing low marble fountain in the north-east arrival corner, the water feature named in the B4 documents. A thin water curtain falls into a marble basin, with no columns or planting around it.', cam: { from: [7.2, 5.7, 1.6], to: [9.1, 4.4, 0.6] } },
+      { id: 'water', name: 'Fountain', size: 'North-east corner', r: [8.55, 3.3, 9.65, 5.6], kind: 'pave', notes: 'A wall fountain in the north-east arrival corner, the water feature named in the B4 documents: a beige stone back wall against the boundary, a steel spout and a sheet of water falling into a low marble basin, lit warm from below.', cam: { from: [7.2, 5.7, 1.6], to: [9.1, 4.4, 0.6] } },
       { id: 'passage', name: 'East Walk', size: '3.15 m wide', r: [5.1, 5.75, 9.75, 10.2], kind: 'out', notes: 'Beige stone walk from the arrival court, past the open lift lobby, to the conversation pit and the lawn.' },
       { id: 'westwalk', name: 'West Strip', size: '1.50 m wide', r: [0, 5.75, 1.53, 10.2], kind: 'lawn', notes: 'A plain lawn strip along the west boundary.' },
       { id: 'gtoilet', name: 'Toilet', size: '1.23 × 1.70 m', r: [1.53, 5.75, 2.93, 7.6], kind: 'wet', notes: N.bath },
       { id: 'glift', name: 'Lift', size: '1.10 × 1.20 m shaft', r: [1.53, 7.6, 3.05, 9.1], kind: 'core', notes: N.lift },
       { id: 'gstair', name: 'Staircase', size: 'Light beige stone', r: [3.05, 5.75, 5.0, 9.1], kind: 'stair', notes: N.stair },
-      { id: 'globby', name: 'Lift Lobby', size: '+0.90 m', r: [1.53, 9.1, 5.1, 10.2], kind: 'core', notes: 'The lift lobby is left open to the stilt on the east: no glass wall, no door, just the core walls around the lift, stair and toilet.' },
+      { id: 'globby', name: 'Lift Lobby', size: '+0.90 m', r: [1.53, 9.1, 5.1, 10.2], kind: 'core', notes: 'The entry into the house: a pair of Shine Grey metal doors on the east side of the lift lobby, opening out to the stilt. Inside are the lift and the stair.' },
       { id: 'pavilion', name: 'Pavilion Deck', size: 'Beige stone', r: [1.53, 10.2, 9.75, 14.3], kind: 'out', holes: [[1.75, 11.15, 4.85, 13.85]], notes: 'The covered heart of the stilt in beige stone. The columns are greige up to the first slab, and two flush planter beds sit in the floor along the east edge.' },
-      { id: 'pit', name: 'Conversation Pit', size: '3.10 × 2.70 m · 1.5 ft sunken', r: [1.75, 11.15, 4.85, 13.85], kind: 'pit', notes: 'Sunk 1.5 ft below the stilt floor and finished entirely in marble: floor, sides, steps and the built-in seats, which have greige cushions. A low marble table sits in the centre. The core wall beside it is plain white.', cam: { from: [5.6, 13.9, 1.5], to: [3.0, 11.6, 0.3] } },
+      { id: 'pit', name: 'Conversation Pit', size: '3.10 × 2.70 m · 1.5 ft sunken', r: [1.75, 11.15, 4.85, 13.85], kind: 'pit', notes: 'Sunk 1.5 ft below the stilt floor and finished entirely in marble: floor, sides, steps and flush built-in seats with a thin cushion, so nothing rises above the stilt floor. A low marble table sits in the centre. The core wall beside it is plain white.', cam: { from: [5.6, 13.9, 1.5], to: [3.0, 11.6, 0.3] } },
       { id: 'garden', name: 'South Lawn', size: '≈ 500 sq ft', r: [0, 14.3, 9.75, 19.0], kind: 'lawn', notes: 'A plain lawn opening to the club side. Vertical gardens flank the middle column. The boundary here is a 1.5 ft wall with glass above.', cam: { from: [9.2, 16.4, 1.6], to: [3.0, 15.2, 1.0] } },
       { id: 'weststrip', name: 'West Strip', size: 'Lawn', r: [0, 10.2, 1.53, 14.3], kind: 'lawn', notes: 'A plain lawn strip beside the conversation pit.' },
     ],
@@ -168,7 +178,7 @@ window.FLOORS = [
       // core (the lobby stays open to the east)
       [1.53, 5.75, 1.95, 5.75], [1.95, 5.75, 2.75, 5.75, 'd'], [2.75, 5.75, 5.0, 5.75], [1.53, 5.75, 1.53, 10.2], [2.93, 5.75, 2.93, 7.6], [1.53, 7.6, 3.05, 7.6],
       [3.05, 7.6, 3.05, 9.1], [1.53, 9.1, 1.85, 9.1], [1.85, 9.1, 2.7, 9.1, 'd'], [2.7, 9.1, 3.05, 9.1],
-      [5.0, 5.75, 5.0, 9.1], [1.53, 10.2, 5.1, 10.2],
+      [5.0, 5.75, 5.0, 9.1], [1.53, 10.2, 5.1, 10.2], [5.1, 9.1, 5.1, 10.2, 'dd'],
     ],
     columns: [[1.53, 3.0], [7.95, 3.0], [7.95, 10.1], [4.83, 14.5], [1.53, 14.5], [7.95, 14.5], [1.53, 17.9], [4.71, 17.9], [7.95, 17.9]],
     furn: [
@@ -199,10 +209,10 @@ window.FLOORS = [
     stats: [['Footprint', '6.75 × 15.50 m'], ['Bedrooms', '2'], ['Mandir', 'North-east corner']],
     rooms: [
       { id: 'bed1', name: 'Bedroom 1', size: '3.20 × 3.60 m', r: [0, 0, 3.42, 3.75], kind: '', notes: 'North-west bedroom with the 1.0 m enclosed balcony zone along the front glass as a window seat. Upholstered bed facing a TV on the east wall, a 1.5 ft deep wardrobe on the south wall, sheer curtains, and its own bath.', cam: { from: [3.0, 3.3, 1.5], to: [0.9, 1.2, 0.9] } },
-      { id: 'living', name: 'Living', size: '3.10 × 4.92 m', poly: [[3.42, 0], [5.3, 0], [5.3, 1.75], [6.75, 1.75], [6.75, 5.6], [3.42, 5.6]], label: [4.9, 3.6], kind: '', notes: 'Spanish Beige marble underfoot and warm white walls. An L-shaped sofa runs along the stair-side wall and faces a TV on the solid stretch of the east wall. Light comes from the north glazing and a warm cove.', cam: { from: [3.75, 2.0, 1.55], to: [6.3, 3.6, 1.0] } },
+      { id: 'living', name: 'Living', size: '3.10 × 4.92 m', poly: [[3.42, 0], [5.3, 0], [5.3, 1.75], [6.75, 1.75], [6.75, 5.6], [3.42, 5.6]], label: [4.9, 3.6], kind: '', notes: 'Spanish Beige marble underfoot and warm white walls. A sofa faces the TV on the solid stretch of the east wall, set forward so the Bedroom 1 door stays clear. Light comes from the north glazing and a warm cove.', cam: { from: [3.75, 2.0, 1.55], to: [6.3, 3.6, 1.0] } },
       { id: 'mandir', name: 'Mandir', size: 'North-east corner', r: [5.3, 0, 6.75, 1.75], kind: '', notes: 'In the north-east corner of the first floor. A white marble shrine stands on the east wall, so you face east in prayer. It has a fluted stone back panel with a warm concealed light and a brass diya ledge. There are no partition walls: it stays open to the living room on the west, with a single clear glass panel on its south side.', cam: { from: [5.45, 1.35, 1.45], to: [6.45, 0.9, 1.15] } },
       { id: 'dining', name: 'Dining', size: '3.10 × 3.75 m', r: [3.42, 5.6, 6.75, 9.35], kind: '', notes: 'A six-seat dining table set against the east window, between living and kitchen, under a slim linear pendant. The residence door from the lobby opens here.', cam: { from: [4.0, 9.1, 1.5], to: [5.7, 6.9, 0.8] } },
-      { id: 'kitchen', name: 'Kitchen + Dining', size: '3.10 × 4.50 m', r: [3.42, 9.35, 6.75, 13.85], label: [4.7, 12.3], kind: '', notes: N.kitchen + ' Built to the Godrej drawing for this floor: a 3.0 m run on the east wall with a 1.2 m return facing the dining table, in matt grey. The balcony door is at the right (east) end of the back wall, with windows across the rest.', cam: { from: [5.0, 13.55, 1.5], to: [6.2, 10.4, 0.9] } },
+      { id: 'kitchen', name: 'Kitchen + Dining', size: '3.10 × 4.50 m', r: [3.42, 9.35, 6.75, 13.85], label: [4.7, 12.3], kind: '', notes: N.kitchen + ' Built to the Godrej drawing for this floor: a 3.0 m run on the east wall with a 1.2 m return facing the dining table, in matt grey. The balcony door is on the right as you face the balcony, at the west end of the back wall, with windows across the rest.', cam: { from: [5.0, 13.55, 1.5], to: [6.2, 10.4, 0.9] } },
       { id: 'balcony', name: 'Balcony', size: '2.95 × 1.50 m', r: [3.42, 13.85, 6.75, 15.5], kind: 'bal', notes: N.balcony },
       ...CORE.rooms, ...BATH_F1.rooms,
     ],
@@ -278,8 +288,8 @@ function upper({ id, level, short, title, drawing, cut }) {
     : { id: 'master', name: 'Bedroom 1 · Double-height Retreat', size: '6.45 × 3.60 m', label: [5.1, 1.1], poly: [[0, 0], [6.75, 0], [6.75, 2.25], [3.55, 2.25], [3.55, 3.75], [0, 3.75]], kind: '', notes: 'The full-width bedroom across the north front. Its eastern half rises two storeys behind tall TOSTEM glazing, a private double-height retreat discovered upstairs and kept away from the entrance. The back wall of that volume is the home’s single hero moment: a white marble wall, two storeys tall, behind frameless glazing. Two armchairs and a reading lamp sit before it, and the bed faces a low TV unit.', cam: { from: [3.3, 2.05, 1.55], to: [5.9, 0.6, 2.6] } };
   const rooms = [
     master,
-    { id: 'living', name: 'Living', size: '3.10 × 7.68 m', label: [5.1, 5.0], poly: [[3.55, 2.25], [6.75, 2.25], [6.75, 8.25], [3.42, 8.25], [3.42, 3.75], [3.55, 3.75]], kind: '', notes: 'Spanish Beige marble and warm white walls. An L-shaped sofa faces a TV wall on the north side, with a stone coffee table between. The hills fill both east windows.', cam: { from: [6.3, 7.9, 1.55], to: [4.2, 3.0, 1.0] } },
-    { id: 'kitchen', name: 'Kitchen + Dining', size: '3.10 × 5.62 m', label: [4.6, 11.4], r: [3.42, 8.25, 6.75, 13.85], kind: '', notes: N.kitchen + (cut ? ' Built to the Godrej drawing for this floor: a straight 3.0 m run and a free-standing 820 × 700 mm island.' : ' Built to the Godrej drawing for this floor: the main run on the east wall, a tall glass-fronted crockery unit on the west wall, and an 820 × 700 mm island.') + ' Cabinets are matt grey. The six-seat dining table sits against the east window at the living end, and the balcony door is at the right end of the back wall.', cam: { from: [5.0, 13.55, 1.5], to: [6.2, 10.4, 0.9] } },
+    { id: 'living', name: 'Living', size: '3.10 × 7.68 m', label: [5.1, 5.0], poly: [[3.55, 2.25], [6.75, 2.25], [6.75, 8.25], [3.42, 8.25], [3.42, 3.75], [3.55, 3.75]], kind: '', notes: 'Spanish Beige marble and warm white walls. ' + (cut ? 'The sofa sits with its back to the east window, facing a TV on the west wall, with an armchair by the north wall.' : 'The sofa faces a TV wall on the north side, with an armchair against the east wall.') + ' The hills fill both east windows.', cam: { from: [6.3, 7.9, 1.55], to: [4.2, 3.0, 1.0] } },
+    { id: 'kitchen', name: 'Kitchen + Dining', size: '3.10 × 5.62 m', label: [4.6, 11.4], r: [3.42, 8.25, 6.75, 13.85], kind: '', notes: N.kitchen + (cut ? ' Built to the Godrej drawing for this floor: a straight 3.0 m run and a free-standing 820 × 700 mm island.' : ' Built to the Godrej drawing for this floor: the main run on the east wall, a tall glass-fronted crockery unit on the west wall, and an 820 × 700 mm island.') + ' Cabinets are matt grey. The six-seat dining table sits against the east window at the living end, and the balcony door is on the right as you face the balcony (west end), with windows across the rest.', cam: { from: [5.0, 13.55, 1.5], to: [6.2, 10.4, 0.9] } },
     { id: 'balcony', name: 'Balcony', size: '2.95 × 1.50 m', r: [3.42, 13.85, 6.75, 15.5], kind: 'bal', notes: N.balcony },
     ...CORE.rooms, ...BATH_BIG.rooms,
   ];
@@ -299,10 +309,10 @@ function upper({ id, level, short, title, drawing, cut }) {
     { t: 'wardrobe', x: 1.4, y: 3.25, w: 1.65, d: 0.45, face: 's' },
     { t: 'curtain', x: 0.12, y: 0.07, w: 3.2, d: 0.1, face: 'n' },
     { t: 'tv', x: 2.75, y: 1.1, w: 0.42, d: 1.5, face: 'e', low: true },
-    ...LIVING_UP,
+    ...(cut ? LIVING_F3 : LIVING_F2),
     { t: 'dining', x: 5.2, y: 8.5, w: 0.95, d: 1.75 },
     { t: 'counter', x: 6.03, y: 10.4, w: 0.6, d: 2.7, face: 'e' },
-    { t: 'island', x: 4.35, y: 12.3, w: 0.7, d: 0.82 },
+    { t: 'island', x: 4.6, y: 12.3, w: 0.7, d: 0.82 },
     ...(cut ? [] : [{ t: 'tall', x: 3.48, y: 12.55, w: 0.32, d: 1.05, face: 'w', tone: 'kitchen', glass: true }]),
     ...CORE.furn, ...BATH_BIG.furn,
   ];
