@@ -280,8 +280,8 @@ window.FLOORS = [
 
 function upper({ id, level, short, title, drawing, cut }) {
   const master = cut
-    ? { id: 'master', name: 'Bedroom 1 · Gallery', size: '3.20 × 3.60 m', r: [0, 0, 3.55, 3.75], kind: '', notes: 'On the third floor, Bedroom 1 looks through a glass railing into the double-height volume and its white marble wall, like a mezzanine gallery. The terrace skylight above brings daylight straight down into the room. A 1.5 ft deep wardrobe on the south wall and a low TV unit facing the bed.', cam: { from: [3.35, 2.95, 1.6], to: [5.2, 0.9, 0.2] } }
-    : { id: 'master', name: 'Bedroom 1 · Double-height Retreat', size: '6.45 × 3.60 m', label: [5.1, 1.1], poly: [[0, 0], [6.75, 0], [6.75, 2.25], [3.55, 2.25], [3.55, 3.75], [0, 3.75]], kind: '', notes: 'The full-width bedroom across the north front. Its eastern half rises two storeys behind tall TOSTEM glazing, a private double-height retreat discovered upstairs and kept away from the entrance. The back wall of that volume is the home’s single hero moment: a white marble wall, two storeys tall, behind frameless glazing. Two armchairs and a reading lamp sit before it, and the bed faces a low TV unit.', cam: { from: [3.3, 2.05, 1.55], to: [5.9, 0.6, 2.6] } };
+    ? { id: 'master', name: 'Bedroom 1 · Gallery', size: '3.20 × 3.60 m', r: [0, 0, 3.55, 3.75], kind: '', notes: 'On the third floor, Bedroom 1 looks through a glass railing into the double-height volume and its white marble wall, like a mezzanine gallery. The terrace skylight above brings daylight straight down into the room. A 1.5 ft deep wardrobe on the south wall and a TV on a slim wall facing the bed.', cam: { from: [3.35, 2.95, 1.6], to: [5.2, 0.9, 0.2] } }
+    : { id: 'master', name: 'Bedroom 1 · Double-height Retreat', size: '6.45 × 3.60 m', label: [5.1, 1.1], poly: [[0, 0], [6.75, 0], [6.75, 2.25], [3.55, 2.25], [3.55, 3.75], [0, 3.75]], kind: '', notes: 'The full-width bedroom across the north front. Its eastern half rises two storeys behind tall TOSTEM glazing, a private double-height retreat discovered upstairs and kept away from the entrance. The back wall of that volume is the home’s single hero moment: a white marble wall, two storeys tall, behind frameless glazing. Two armchairs and a reading lamp sit before it, and the bed faces a TV on a slim wall at the edge of the room.', cam: { from: [3.3, 2.05, 1.55], to: [5.9, 0.6, 2.6] } };
   const rooms = [
     master,
     { id: 'living', name: 'Living', size: '3.10 × 7.68 m', label: [5.1, 5.0], poly: [[3.55, 2.25], [6.75, 2.25], [6.75, 8.25], [3.42, 8.25], [3.42, 3.75], [3.55, 3.75]], kind: '', notes: 'Spanish Beige marble and warm white walls. ' + (cut ? 'The sofa sits with its back to the east window, facing a TV on the west wall, with an armchair by the north wall.' : 'The sofa sits with its back to the east window, facing a TV on the west wall, with an armchair to the south.') + ' The hills fill both east windows.', cam: { from: [6.3, 7.9, 1.55], to: [4.2, 3.0, 1.0] } },
@@ -295,6 +295,7 @@ function upper({ id, level, short, title, drawing, cut }) {
     [0, 0, 2.15, 0, 'g'], [2.15, 0, 2.4, 0], [2.4, 0, 3.55, 0, 'g'], [3.55, 0, 6.75, 0, 'g', cut ? { frameless: true } : { hh: 5.8, frameless: true }], ...EAST(!cut, true),
     [3.55, 2.25, 6.75, 2.25, 'w', cut ? undefined : { hh: 5.8 }], [3.55, 2.25, 3.55, 2.7], [3.55, 3.72, 3.55, 2.7, 'd'], [3.42, 3.75, 3.55, 3.75],
     [2.85, 9.3, 3.42, 9.3],
+    [3.25, 0.65, 3.25, 2.05],                                   // TV wall facing the bed in Bedroom 1
     ...CORE.walls, ...BATH_BIG.walls,
   ];
   if (cut) walls.push([3.55, 0.1, 3.55, 2.25, 'r']);
@@ -304,7 +305,7 @@ function upper({ id, level, short, title, drawing, cut }) {
     { t: 'nightstand', x: 0.06, y: 0.28, w: 0.5, d: 0.42 }, { t: 'nightstand', x: 0.06, y: 2.7, w: 0.5, d: 0.42 },
     { t: 'wardrobe', x: 1.4, y: 3.25, w: 1.65, d: 0.45, face: 's' },
     { t: 'curtain', x: 0.12, y: 0.07, w: 3.2, d: 0.1, face: 'n' },
-    { t: 'tv', x: 2.3, y: 0.95, w: 0.42, d: 1.5, face: 'e', low: true },
+    { t: 'tv', x: 2.75, y: 0.75, w: 0.42, d: 1.4, face: 'e' },
     ...(cut ? LIVING_F3 : LIVING_F2),
     { t: 'dining', x: 5.2, y: 8.5, w: 0.95, d: 1.75 },
     { t: 'counter', x: 6.03, y: 10.4, w: 0.6, d: 2.7, face: 'e' },
