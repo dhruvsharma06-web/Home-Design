@@ -75,10 +75,7 @@ const CORE = {
     { t: 'lounge', x: 4.75, y: 14.1, w: 0.72, d: 0.72, face: 's' }, { t: 'lounge', x: 5.92, y: 14.1, w: 0.72, d: 0.72, face: 's' }, { t: 'sidetable', x: 5.5, y: 14.25, w: 0.4, d: 0.4 },
     // façade: 5 full-height fins at the north-west corner; one 75%-height fin panel per floor on the east face, up to the window
     { t: 'fins', x: -0.42, y: 0.2, w: 0.4, d: 1.0 },
-    { t: 'rodscreen', x: 7.05, y: 2.45, w: 0.1, d: 13.35 },
-    { t: 'post', x: -0.42, y: -0.42, w: 0.18, d: 0.18 }, { t: 'post', x: 6.99, y: -0.42, w: 0.18, d: 0.18 },
-    { t: 'post', x: -0.42, y: 15.74, w: 0.18, d: 0.18 }, { t: 'post', x: 6.99, y: 15.74, w: 0.18, d: 0.18 },
-    { t: 'post', x: 2.18, y: -0.42, w: 0.18, d: 0.18 }, { t: 'post', x: 3.46, y: -0.42, w: 0.18, d: 0.18 },
+    { t: 'rodscreen', x: -0.4, y: 1.35, w: 0.1, d: 14.45 },
     // storage lofts at 7 ft over the washrooms
     { t: 'loft', x: 0.0, y: 3.75, w: 1.38, d: 1.85 }, { t: 'loft', x: 0.0, y: 8.15, w: 2.5, d: 1.15 },
   ],
@@ -180,7 +177,7 @@ window.FLOORS = [
       // compound wall: 1.5 ft Shine Grey wall, metal fence above on the road and sides, glass above at the back (south)
       [0, 0, 6.46, 0, 'c'], [0, 0, 0, 19, 'c'], [9.75, 0, 9.75, 19, 'c'], [0, 19, 9.75, 19, 'c'],
       // core (the lobby stays open to the east)
-      [1.53, 5.75, 1.95, 5.75], [1.95, 5.75, 2.75, 5.75, 'd'], [2.75, 5.75, 5.0, 5.75], [1.53, 5.75, 1.53, 10.2], [2.93, 5.75, 2.93, 7.6], [1.53, 7.6, 3.05, 7.6],
+      [1.53, 5.75, 1.95, 5.75], [1.95, 5.75, 2.75, 5.75, 'd', { leaf: true }], [2.75, 5.75, 5.0, 5.75], [1.53, 5.75, 1.53, 10.2], [2.93, 5.75, 2.93, 7.6], [1.53, 7.6, 3.05, 7.6],
       [3.05, 7.6, 3.05, 9.1], [1.53, 9.1, 1.85, 9.1], [1.85, 9.1, 2.7, 9.1, 'd'], [2.7, 9.1, 3.05, 9.1],
       [5.0, 5.75, 5.0, 9.1], [1.53, 10.2, 5.1, 10.2], [5.1, 9.1, 5.1, 10.2, 'dd'],
     ],
@@ -276,8 +273,6 @@ window.FLOORS = [
       { t: 'oshower', x: 3.56, y: 4.1, w: 0.2, d: 0.9, face: 'w' },
       { t: 'poolflush', x: 3.3, y: 9.15, w: 3.35, d: 3.35, depth: 0.9 },
       { t: 'pergola3', x: 0.12, y: 8.3, w: 3.0, d: 7.08 },
-      { t: 'post', x: -0.42, y: -0.42, w: 0.18, d: 0.18, h: 1.4 }, { t: 'post', x: 6.99, y: -0.42, w: 0.18, d: 0.18, h: 1.4 },
-      { t: 'post', x: -0.42, y: 15.74, w: 0.18, d: 0.18, h: 1.4 }, { t: 'post', x: 6.99, y: 15.74, w: 0.18, d: 0.18, h: 1.4 },
       { t: 'tank', x: 0.45, y: 4.85, w: 1.0, d: 1.0, onRoof: true }, { t: 'tank', x: 1.85, y: 4.85, w: 1.0, d: 1.0, onRoof: true },
       { t: 'tankfins', x: 0.2, y: 4.55, w: 2.95, d: 1.6 },
     ],

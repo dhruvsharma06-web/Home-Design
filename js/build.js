@@ -377,9 +377,9 @@
         break;
       }
       case 'rodscreen': {                                                                   // architect's long-face screen: dark vertical rods, floor to floor, with denser bands
-        const bands = [[0.18, 0.26], [0.47, 0.53], [0.74, 0.8]];
-        for (let z = -hd; z <= hd + 0.001; z += 0.05) { const t = (z + hd) / d, dense = bands.some(([a, c]) => t >= a && t <= c);
-          if (!dense && Math.round((z + hd) / 0.05) % 2) continue; g.add(box(0.03, H + SLAB, dense ? 0.035 : 0.025, m.rod, 0, -SLAB, z, false)); }
+        const bands = [[0.2, 0.25], [0.48, 0.52], [0.76, 0.8]];
+        for (let z = -hd; z <= hd + 0.001; z += 0.05) { const t = (z + hd) / d, dense0 = bands.some(([a, c]) => t >= a && t <= c), dense = dense0 && Math.round((z + hd) / 0.05) % 2 === 0;
+          if (!dense && Math.round((z + hd) / 0.05) % 4) continue; g.add(box(0.03, H + SLAB, dense ? 0.035 : 0.025, m.rod, 0, -SLAB, z, false)); }
         for (const y of [-SLAB + 0.02, H - 0.06]) g.add(box(0.06, 0.05, d, m.rod, 0, y, 0, false));
         break;
       }
@@ -470,7 +470,7 @@
         pv.userData.door = { open: true, openA, target: openA, seg }; g.add(pv); if (DOORS) DOORS.push(pv);
       }
     }
-    else if (t === 'd') { g.add(box(len, H - 2.15, th, m.wall, 0, 2.15, 0)); if (len < 1.3 && floor.id !== 'g' && !(floor.openAir && floor.id === 't' && x1 === 1.38) && !(y1 === y2 && Math.abs(y1 - 13.85) < 0.01)) { for (const s of [-1, 1]) g.add(box(0.05, 2.15, th + 0.04, m.wood, s * (len / 2 - 0.025), 0, 0, false)); g.add(box(len, 0.05, th + 0.04, m.wood, 0, 2.1, 0, false));
+    else if (t === 'd') { g.add(box(len, H - 2.15, th, m.wall, 0, 2.15, 0)); if (len < 1.3 && (floor.id !== 'g' || o.leaf) && !(floor.openAir && floor.id === 't' && x1 === 1.38) && !(y1 === y2 && Math.abs(y1 - 13.85) < 0.01)) { for (const s of [-1, 1]) g.add(box(0.05, 2.15, th + 0.04, m.wood, s * (len / 2 - 0.025), 0, 0, false)); g.add(box(len, 0.05, th + 0.04, m.wood, 0, 2.1, 0, false));
       const pv = new T.Group(), lw = len - 0.12; pv.position.set(-len / 2 + 0.06, 0, th / 2 + 0.025); pv.userData.keep = true;   // leaf on the wall face, so open it folds flat against the wall
       pv.add(box(lw, 2.08, 0.04, m.wood, lw / 2, 0.01, 0)); for (const s of [-1, 1]) pv.add(box(0.02, 0.02, 0.14, m.brass, lw - 0.08, 1.02, s * 0.04, false));
       const openA = -Math.PI * 0.98; pv.rotation.y = openA; pv.userData.door = { open: true, openA, target: openA, seg: { x1, y1, x2, y2, r: 0.05 } }; g.add(pv); if (DOORS) DOORS.push(pv); } }
