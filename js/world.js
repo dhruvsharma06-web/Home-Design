@@ -221,7 +221,7 @@
     highlight(id) { (this.roomMeshes || []).forEach((r) => { r.material.opacity = r.userData.roomId === id ? 0.2 : 0; }); }
 
     /* ---------------- furniture: select, move, rotate, add, remove, recolour ---------------- */
-    _key() { return 'b4-layout3-' + this.floor.id; }
+    _key() { return 'b4-layout4-' + this.floor.id; }
     _store() { let s = {}; try { s = JSON.parse(localStorage.getItem(this._key()) || '{}'); } catch (e) {} return { m: s.m || {}, del: s.del || [], add: s.add || [], tint: s.tint || {} }; }
     _put(s) { try { localStorage.setItem(this._key(), JSON.stringify(s)); } catch (e) {} }
     _saveItem(g) { const s = this._store(), f = g.userData.f, rec = { x: +f.x.toFixed(3), y: +f.y.toFixed(3), face: f.face || 'n' }; if (f.added) { const a = s.add.find((x) => 'a' + x.id === g.userData.idx); if (a) Object.assign(a, rec, { w: f.w, d: f.d }); } else s.m[g.userData.idx] = rec; this._put(s); }
