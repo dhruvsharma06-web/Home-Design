@@ -175,25 +175,34 @@
   function plantModel(g, r, m, tall = 1.25) { g.add(cyl(r * 0.5, 0.42, m.pot, 0, 0, 0, 24, r * 0.6)); g.add(cyl(0.02, tall - 0.5, m.trunk, 0, 0.4, 0, 8)); g.add(blob(r * 0.85, m.leaf, 0, tall - 0.25, 0, 1.15)); g.add(blob(r * 0.6, m.leaf2, r * 0.3, tall + 0.15, -r * 0.15)); g.add(blob(r * 0.5, m.leaf3, -r * 0.3, tall - 0.05, r * 0.25)); }
   function chairModel(m, mat) { const c = new T.Group(); c.add(rbox(0.46, 0.07, 0.46, 0.03, mat, 0, 0.41, 0)); const b = rbox(0.44, 0.42, 0.05, 0.025, mat, 0, 0.5, -0.2); b.rotation.x = -0.1; c.add(b); for (const [a, e] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) { const l = cyl(0.014, 0.42, m.wood, a * 0.19, 0, e * 0.19, 8, 0.018); c.add(l); } return c; }
 
-  /** seated Ganesha murti in brass, facing +x (~0.42 m tall) */
+  /** seated Ganesha murti, facing +x (~0.5 m tall): gold body, red dhoti, garland, tusk, tilak, arch */
   function ganesha(m) {
-    const gold = m.idol || (m.idol = new T.MeshStandardMaterial({ color: '#C9A24E', roughness: 0.3, metalness: 0.85 })), g = new T.Group();
-    const sph = (r, x, y, z, sx = 1, sy = 1, sz = 1) => { const s = new T.Mesh(new T.SphereGeometry(r, 24, 16), gold); s.position.set(x, y, z); s.scale.set(sx, sy, sz); s.castShadow = true; g.add(s); return s; };
-    const lotus = new T.Mesh(new T.CylinderGeometry(0.14, 0.11, 0.05, 24), gold); lotus.position.y = 0.025; g.add(lotus);
-    for (let i = 0; i < 12; i++) { const a = (i / 12) * Math.PI * 2; sph(0.035, Math.cos(a) * 0.12, 0.05, Math.sin(a) * 0.12, 1, 0.6, 1); }
-    sph(0.12, 0.01, 0.1, 0, 0.75, 0.38, 1.2);                       // crossed legs
-    sph(0.1, 0.0, 0.18, 0, 0.95, 1.05, 1.0);                        // belly / body
-    sph(0.075, 0.0, 0.31, 0, 1, 1.05, 1);                           // head
-    for (const s of [-1, 1]) { const ear = new T.Mesh(new T.CylinderGeometry(0.07, 0.07, 0.012, 24), gold); ear.rotation.x = Math.PI / 2; ear.scale.set(1, 1, 1.25); ear.position.set(-0.015, 0.31, s * 0.085); ear.rotation.y = s * 0.35; g.add(ear); }
-    const crown = new T.Mesh(new T.ConeGeometry(0.045, 0.1, 16), gold); crown.position.y = 0.42; g.add(crown); sph(0.012, 0, 0.475, 0);
-    const trunk = new T.CatmullRomCurve3([new T.Vector3(0.06, 0.3, 0), new T.Vector3(0.095, 0.24, 0), new T.Vector3(0.1, 0.17, 0.01), new T.Vector3(0.085, 0.13, 0.045), new T.Vector3(0.07, 0.15, 0.07)]);
-    const tm = new T.Mesh(new T.TubeGeometry(trunk, 20, 0.016, 10, false), gold); tm.castShadow = true; g.add(tm);
+    const M = m.gn || (m.gn = { gold: new T.MeshStandardMaterial({ color: '#D4A94F', roughness: 0.28, metalness: 0.9 }), cloth: new T.MeshStandardMaterial({ color: '#B3262B', roughness: 0.6 }),
+      shawl: new T.MeshStandardMaterial({ color: '#E8901E', roughness: 0.6 }), flower: new T.MeshStandardMaterial({ color: '#F2A93B', roughness: 0.7 }), ivory: new T.MeshStandardMaterial({ color: '#F4EEE2', roughness: 0.4 }), dark: new T.MeshStandardMaterial({ color: '#1A1512', roughness: 0.4 }), red: new T.MeshStandardMaterial({ color: '#C8102E', roughness: 0.5 }) });
+    const g = new T.Group();
+    const sph = (r, mat, x, y, z, sx = 1, sy = 1, sz = 1) => { const s = new T.Mesh(new T.SphereGeometry(r, 28, 18), mat); s.position.set(x, y, z); s.scale.set(sx, sy, sz); s.castShadow = true; g.add(s); return s; };
+    const base = new T.Mesh(new T.CylinderGeometry(0.16, 0.13, 0.05, 32), M.gold); base.position.y = 0.025; g.add(base);
+    for (let i = 0; i < 16; i++) { const a = (i / 16) * Math.PI * 2; sph(0.04, M.gold, Math.cos(a) * 0.14, 0.06, Math.sin(a) * 0.14, 1, 0.55, 0.7).rotation.y = -a; }
+    sph(0.14, M.cloth, 0.02, 0.12, 0, 0.75, 0.42, 1.2);                                   // dhoti over crossed legs
+    sph(0.035, M.gold, 0.11, 0.1, 0.1, 1.2, 0.7, 1); sph(0.035, M.gold, 0.11, 0.1, -0.1, 1.2, 0.7, 1);   // feet
+    sph(0.115, M.gold, 0.0, 0.23, 0, 0.95, 1.05, 1.0);                                    // belly
+    const sash = new T.Mesh(new T.TorusGeometry(0.1, 0.012, 8, 32), M.shawl); sash.position.set(0.0, 0.3, 0); sash.rotation.set(Math.PI / 2, 0, 0.35); g.add(sash);
+    for (let i = 0; i < 11; i++) { const a = -1.3 + i * 0.26; sph(0.014, i % 2 ? M.flower : M.red, 0.085 + Math.cos(a) * 0.02, 0.3 - Math.abs(Math.sin(a)) * 0.07, Math.sin(a) * 0.08); }   // garland
+    sph(0.09, M.gold, 0.0, 0.39, 0, 1, 1.05, 1.05);                                       // head
+    for (const s of [-1, 1]) { const ear = new T.Mesh(new T.SphereGeometry(0.085, 24, 12), M.gold); ear.scale.set(0.12, 1.15, 0.85); ear.position.set(-0.02, 0.385, s * 0.105); ear.rotation.y = s * 0.45; g.add(ear);
+      sph(0.009, M.dark, 0.083, 0.41, s * 0.03); }                                         // eyes
+    const tusk = new T.Mesh(new T.ConeGeometry(0.009, 0.06, 8), M.ivory); tusk.position.set(0.085, 0.345, 0.03); tusk.rotation.z = -1.9; g.add(tusk);
+    sph(0.008, M.red, 0.087, 0.445, 0, 1, 1.6, 1);                                        // tilak
+    const trunk = new T.CatmullRomCurve3([new T.Vector3(0.075, 0.38, 0), new T.Vector3(0.11, 0.32, 0), new T.Vector3(0.115, 0.25, -0.01), new T.Vector3(0.1, 0.19, -0.035), new T.Vector3(0.075, 0.18, -0.065)]);
+    g.add(new T.Mesh(new T.TubeGeometry(trunk, 24, 0.022, 12, false), M.gold));
+    const crown = new T.Mesh(new T.CylinderGeometry(0.03, 0.06, 0.12, 20), M.gold); crown.position.y = 0.53; g.add(crown); sph(0.022, M.gold, 0, 0.6, 0, 1, 1.4, 1);
     for (const s of [-1, 1]) {
-      const arm = new T.Mesh(new T.CylinderGeometry(0.018, 0.02, 0.16, 10), gold); arm.position.set(0.02, 0.24, s * 0.105); arm.rotation.x = s * -0.5; g.add(arm); sph(0.022, 0.02, 0.32, s * 0.14);  // raised hands
-      sph(0.024, 0.075, 0.16, s * 0.07);                                                                                                            // lower hands
+      const up = new T.Mesh(new T.CylinderGeometry(0.02, 0.024, 0.18, 12), M.gold); up.position.set(0.0, 0.33, s * 0.13); up.rotation.x = s * -0.6; g.add(up); sph(0.024, M.gold, 0.01, 0.42, s * 0.18);
+      const lo = new T.Mesh(new T.CylinderGeometry(0.02, 0.022, 0.13, 12), M.gold); lo.position.set(0.06, 0.24, s * 0.1); lo.rotation.z = -1.0; g.add(lo); sph(0.024, M.gold, 0.11, 0.21, s * 0.11);
     }
-    sph(0.03, 0.08, 0.13, -0.02, 1, 0.8, 1);                         // modak
-    const aura = new T.Mesh(new T.TorusGeometry(0.2, 0.012, 8, 40, Math.PI), gold); aura.rotation.y = Math.PI / 2; aura.position.set(-0.07, 0.24, 0); g.add(aura);
+    sph(0.028, M.flower, 0.12, 0.2, -0.11, 1, 0.8, 1);                                    // modak
+    const aura = new T.Mesh(new T.TorusGeometry(0.27, 0.016, 10, 48, Math.PI), M.gold); aura.rotation.y = Math.PI / 2; aura.position.set(-0.08, 0.3, 0); g.add(aura);
+    for (let i = 0; i <= 12; i++) { const a = (i / 12) * Math.PI; sph(0.014, M.gold, -0.08, 0.3 + Math.sin(a) * 0.27, Math.cos(a) * 0.27); }
     return g;
   }
 
