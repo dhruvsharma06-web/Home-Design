@@ -130,11 +130,11 @@ const LIVING_F1 = [
 ];
 // living, second floor: sofa facing the TV wall on the north side, armchair against the east wall
 const LIVING_F2 = [
-  { t: 'rug', x: 4.0, y: 3.6, w: 2.3, d: 2.6 },
-  { t: 'tv', x: 3.48, y: 4.1, w: 0.42, d: 1.5, face: 'w' },
-  { t: 'sofa', x: 5.75, y: 3.75, w: 0.92, d: 2.2, face: 'e' },
-  { t: 'armchair', x: 4.4, y: 6.15, w: 0.82, d: 0.82, face: 's' },
-  { t: 'coffee', x: 4.6, y: 4.3, w: 0.6, d: 1.1 },
+  { t: 'rug', x: 4.0, y: 4.55, w: 2.3, d: 2.4 },
+  { t: 'tv', x: 3.48, y: 5.0, w: 0.42, d: 1.5, face: 'w' },
+  { t: 'sofa', x: 5.75, y: 4.65, w: 0.92, d: 2.2, face: 'e' },
+  { t: 'armchair', x: 4.4, y: 3.0, w: 0.82, d: 0.82, face: 'n' },
+  { t: 'coffee', x: 4.6, y: 5.2, w: 0.6, d: 1.1 },
   { t: 'floorlamp', x: 6.25, y: 3.2, w: 0.35, d: 0.35 },
 ];
 // living, third floor: sofa with its back to the east window, facing a TV on the west wall
@@ -284,7 +284,7 @@ function upper({ id, level, short, title, drawing, cut }) {
     : { id: 'master', name: 'Bedroom 1 · Double-height Retreat', size: '6.45 × 3.60 m', label: [5.1, 1.1], poly: [[0, 0], [6.75, 0], [6.75, 2.25], [3.55, 2.25], [3.55, 3.75], [0, 3.75]], kind: '', notes: 'The full-width bedroom across the north front. Its eastern half rises two storeys behind tall TOSTEM glazing, a private double-height retreat discovered upstairs and kept away from the entrance. The back wall of that volume is the home’s single hero moment: a white marble wall, two storeys tall, behind frameless glazing. Two armchairs and a reading lamp sit before it, and the bed faces a TV on a slim wall at the edge of the room.', cam: { from: [3.3, 2.05, 1.55], to: [5.9, 0.6, 2.6] } };
   const rooms = [
     master,
-    { id: 'living', name: 'Living', size: '3.10 × 7.68 m', label: [5.1, 5.0], poly: [[3.55, 2.25], [6.75, 2.25], [6.75, 8.25], [3.42, 8.25], [3.42, 3.75], [3.55, 3.75]], kind: '', notes: 'Spanish Beige marble and warm white walls. ' + (cut ? 'The sofa sits with its back to the east window, facing a TV on the west wall, with an armchair by the north wall.' : 'The sofa sits with its back to the east window, facing a TV on the west wall, with an armchair to the south.') + ' The hills fill both east windows.', cam: { from: [6.3, 7.9, 1.55], to: [4.2, 3.0, 1.0] } },
+    { id: 'living', name: 'Living', size: '3.10 × 7.68 m', label: [5.1, 5.0], poly: [[3.55, 2.25], [6.75, 2.25], [6.75, 8.25], [3.42, 8.25], [3.42, 3.75], [3.55, 3.75]], kind: '', notes: 'Spanish Beige marble and warm white walls. ' + (cut ? 'The sofa sits with its back to the east window, facing a TV on the west wall, with an armchair by the north wall.' : 'The sofa sits with its back to the east window, facing a TV on the west wall, with an armchair to the north.') + ' The hills fill both east windows.', cam: { from: [6.3, 7.9, 1.55], to: [4.2, 3.0, 1.0] } },
     { id: 'kitchen', name: 'Kitchen + Dining', size: '3.10 × 5.62 m', label: [4.6, 11.4], r: [3.42, 8.25, 6.75, 13.85], kind: '', notes: N.kitchen + (cut ? ' Built to the Godrej drawing for this floor: a straight 3.0 m run and a free-standing 820 × 700 mm island.' : ' Built to the Godrej drawing for this floor: the main run on the east wall, a tall glass-fronted crockery unit on the west wall, and an 820 × 700 mm island.') + ' Cabinets are matt grey. The six-seat dining table sits against the east window at the living end, and the balcony door is on the right as you face the balcony (west end), with windows across the rest.', cam: { from: [5.0, 13.55, 1.5], to: [6.2, 10.4, 0.9] } },
     { id: 'balcony', name: 'Balcony', size: '2.95 × 1.50 m', r: [3.42, 13.85, 6.75, 15.5], kind: 'bal', notes: N.balcony },
     ...CORE.rooms, ...BATH_BIG.rooms,
