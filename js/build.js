@@ -225,7 +225,9 @@
         if (!f.low) { g.add(box(w + 0.5, 2.4, 0.04, m.wood, 0, 0.15, -hd + 0.02)); g.add(box(w + 0.5, 0.015, 0.03, m.glow, 0, 2.56, -hd + 0.05, false)); }
         const con = new T.Group(); con.userData.self = g; con.add(rbox(w, 0.42, d * 0.85, 0.015, m.wood, 0, 0.12, 0)); for (const s of [-1, 1]) con.add(box(0.03, 0.12, d * 0.6, m.dark, s * (hw - 0.15), 0, 0)); con.position.z = 0.04; g.add(con);
         if (!lite) useModel(con, 'modern_wooden_cabinet', { w, d: d * 0.95 });
-        g.add(box(Math.min(1.45, w * 0.8), 0.82, 0.03, m.dark, 0, 0.95, -hd + 0.06)); g.add(box(Math.min(1.45, w * 0.8) - 0.03, 0.79, 0.005, m.carGlass, 0, 0.965, -hd + 0.078, false));
+        const sw = f.low ? Math.min(1.15, w * 0.8) : Math.min(1.45, w * 0.8), sh = f.low ? 0.66 : 0.82, sy = f.low ? 0.6 : 0.95, sz = f.low ? 0 : -hd + 0.06;   // low unit: screen sits on the console, facing the bed
+        if (f.low) g.add(box(0.3, 0.05, 0.18, m.dark, 0, 0.55, sz));
+        g.add(box(sw, sh, 0.03, m.dark, 0, sy, sz)); g.add(box(sw - 0.03, sh - 0.03, 0.005, m.carGlass, 0, sy + 0.015, sz + 0.018, false));
         break;
       }
       case 'wardrobe': case 'tall': {
