@@ -394,11 +394,12 @@
         g.add(box(0.004, H - 2.22, 0.004, m.dark, 0, 2.2, hd + 0.001, false));
         break;
       }
-      case 'pergola3': {                                                                    // architect's pergola: white roof frame with timber louvres on two white blade columns (south), flush with the stair-head roof (north)
-        const yb = H + SLAB - 0.3;
-        for (const s of [-1, 1]) g.add(box(0.9, yb, 0.25, m.wall, s * (hw - 0.45), 0, hd - 0.125));
-        for (const s of [-1, 1]) { g.add(box(w, 0.3, 0.25, m.wall, 0, yb, s * (hd - 0.125))); g.add(box(0.25, 0.3, d, m.wall, s * (hw - 0.125), yb, 0)); }
-        for (let z = -hd + 0.4; z < hd - 0.25; z += 0.2) g.add(box(w - 0.5, 0.2, 0.05, m.fins, 0, yb + 0.05, z));
+      case 'pergola3': {                                                                    // architect's pergola: white roof frame with timber louvres on two white blade columns, one at each end of its long side
+        const yb = H + SLAB - 0.3, alongX = w >= d, L = alongX ? w : d, S = alongX ? d : w;
+        const at = (a, s) => (alongX ? [a, s] : [s, a]);                                  // a = along the long axis, s = across
+        for (const e of [-1, 1]) { const [x, z] = at(e * (L / 2 - 0.125), 0); g.add(box(alongX ? 0.25 : S, yb, alongX ? S : 0.25, m.wall, x, 0, z)); }
+        for (const e of [-1, 1]) { const [x1, z1] = at(0, e * (S / 2 - 0.125)); g.add(box(alongX ? L : 0.25, 0.3, alongX ? 0.25 : L, m.wall, x1, yb, z1)); const [x2, z2] = at(e * (L / 2 - 0.125), 0); g.add(box(alongX ? 0.25 : S, 0.3, alongX ? S : 0.25, m.wall, x2, yb, z2)); }
+        for (let a = -L / 2 + 0.4; a < L / 2 - 0.25; a += 0.2) { const [x, z] = at(a, 0); g.add(box(alongX ? 0.05 : S - 0.5, 0.2, alongX ? S - 0.5 : 0.05, m.fins, x, yb + 0.05, z)); }
         break;
       }
       case 'tankfins': {                                                                    // architect's tank screen: dark vertical rods round the two tanks, with a top frame

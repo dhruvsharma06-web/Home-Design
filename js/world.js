@@ -5,8 +5,8 @@
   const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
   const DIM = { sofa: [2.3, 0.92], armchair: [0.82, 0.85], bed: [2.1, 1.6], coffee: [1.1, 0.6], dining: [1.0, 1.8], plant: [0.5, 0.5], floorlamp: [0.35, 0.35], rug: [2.0, 1.4], sidetable: [0.42, 0.42], nightstand: [0.5, 0.42], desk: [1.2, 0.55], chair: [0.48, 0.5], stool: [0.36, 0.36], lounger: [0.7, 1.9], bench: [1.2, 0.4], tv: [1.8, 0.42] };
   const LOOKS = {
-    day: { sun: 2.3, sunC: '#FFE7C8', hemi: 0.28, env: 0.62, exp: 0.86, bg: 1, lights: 0.2, accent: 0.4, onyx: 0.4, shade: 0.4, bloom: 0.16, fog: '#C9D6DA', sunPos: [22, 20, 15] },
-    evening: { sun: 0.12, sunC: '#9FB6E8', hemi: 0.07, env: 0.08, exp: 0.8, bg: 0.035, lights: 0.42, accent: 0.5, onyx: 0.65, shade: 0.8, bloom: 0.2, fog: '#0B0F16', sunPos: [-18, 14, 12] },
+    day: { sun: 2.4, sunC: '#FFF1DE', hemi: 0.75, env: 0.9, exp: 1.0, bg: 1, lights: 0.35, accent: 0.45, onyx: 0.4, shade: 0.4, bloom: 0.16, fog: '#C9D6DA', sunPos: [22, 20, 15] },
+    evening: { sun: 0.2, sunC: '#9FB6E8', hemi: 0.18, env: 0.15, exp: 0.95, bg: 0.035, lights: 0.65, accent: 0.6, onyx: 0.65, shade: 0.8, bloom: 0.2, fog: '#0B0F16', sunPos: [-18, 14, 12] },
     dusk: { sun: 0.75, sunC: '#FFB98A', hemi: 0.2, env: 0.32, exp: 0.98, bg: 0.42, lights: 1.25, accent: 1.2, onyx: 1.0, shade: 1.2, bloom: 0.36, fog: '#4A5568', sunPos: [-26, 9, 14] },
   };
 
@@ -27,7 +27,7 @@
       const sm = this.mobile ? 2048 : 4096; this.sun.shadow.mapSize.set(sm, sm);
       Object.assign(this.sun.shadow.camera, { left: -17, right: 17, top: 17, bottom: -17, near: 1, far: 110 }); this.sun.shadow.bias = -0.0004; this.sun.shadow.normalBias = 0.03;
       this.scene.add(this.sun, this.sun.target);
-      this.fill = new T.HemisphereLight('#DCE9FF', '#BCA98C', 0.28); this.scene.add(this.fill);
+      this.fill = new T.HemisphereLight('#F4F2EC', '#CDBFA6', 0.75); this.scene.add(this.fill);
       this._envInit(); this._composer(w, h);
       this.mode = 'ext'; this.look = this.night ? 'evening' : 'day'; this.night = false; this.lights = []; this.items = []; this.roomMeshes = []; this.col = []; this.boxes = [];
       this.orbit = { theta: -0.5, phi: 1.25, radius: 40, target: new T.Vector3(0, 6.2, 1.25) }; this.goal = { theta: -0.5, phi: 1.25, radius: 40, target: new T.Vector3(0, 6.2, 1.25) };
@@ -158,7 +158,7 @@
       const L = LOOKS[this.look], m = B.mats();
       this.sun.intensity = L.sun; this.sun.color.set(L.sunC); this.fill.intensity = L.hemi; this.renderer.toneMappingExposure = L.exp;
       const c = this.mode === 'ext' ? new T.Vector3(0, 4, 1) : this.centre || new T.Vector3(), sp = this.mode === 'ext' && this.look === 'day' ? [16, 24, -18] : L.sunPos; this.sun.target.position.copy(c); this.sun.position.set(c.x + sp[0], c.y + sp[1], c.z + sp[2]);
-      if (this.mode === 'ext' && this.look !== 'day') this.fill.intensity = 0.16;
+      if (this.mode === 'ext' && this.look !== 'day') this.fill.intensity = 0.24;
       for (const k in m) if ('envMapIntensity' in m[k]) m[k].envMapIntensity = m[k].userData.baseEnv * L.env;
       this.scene.traverse((o) => { const mt = o.material; if (mt && !Array.isArray(mt) && 'envMapIntensity' in mt && (!mt.userData || mt.userData.baseEnv === undefined)) mt.envMapIntensity = L.env; });
       const boost = this.mode === 'ext' && this.look !== 'day' ? 2.6 : 1; (this.lights || []).forEach((l) => { l.intensity = l.userData.base * (l.userData.accent ? L.accent : L.lights) * boost; });

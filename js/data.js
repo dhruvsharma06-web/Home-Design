@@ -74,8 +74,7 @@ const CORE = {
     // balcony
     { t: 'lounge', x: 4.75, y: 14.1, w: 0.72, d: 0.72, face: 's' }, { t: 'lounge', x: 5.92, y: 14.1, w: 0.72, d: 0.72, face: 's' }, { t: 'sidetable', x: 5.5, y: 14.25, w: 0.4, d: 0.4 },
     // façade: 5 full-height fins at the north-west corner; one 75%-height fin panel per floor on the east face, up to the window
-    { t: 'fins', x: -0.42, y: 0.2, w: 0.4, d: 1.0 },
-    { t: 'rodscreen', x: -0.4, y: 1.35, w: 0.1, d: 14.45 },
+    { t: 'rodscreen', x: -0.4, y: -0.3, w: 0.1, d: 16.1 },
     // storage lofts at 7 ft over the washrooms
     { t: 'loft', x: 0.0, y: 3.75, w: 1.38, d: 1.85 }, { t: 'loft', x: 0.0, y: 8.15, w: 2.5, d: 1.15 },
   ],
@@ -177,7 +176,7 @@ window.FLOORS = [
       // compound wall: 1.5 ft Shine Grey wall, metal fence above on the road and sides, glass above at the back (south)
       [0, 0, 6.46, 0, 'c'], [0, 0, 0, 19, 'c'], [9.75, 0, 9.75, 19, 'c'], [0, 19, 9.75, 19, 'c'],
       // core (the lobby stays open to the east)
-      [1.53, 5.75, 1.95, 5.75], [1.95, 5.75, 2.75, 5.75, 'd', { leaf: true }], [2.75, 5.75, 5.0, 5.75], [1.53, 5.75, 1.53, 10.2], [2.93, 5.75, 2.93, 7.6], [1.53, 7.6, 3.05, 7.6],
+      [1.53, 5.75, 5.0, 5.75], [1.53, 5.75, 1.53, 6.75], [1.53, 6.75, 1.53, 7.5, 'd', { leaf: true }], [1.53, 7.5, 1.53, 10.2], [2.93, 5.75, 2.93, 7.6], [1.53, 7.6, 3.05, 7.6],
       [3.05, 7.6, 3.05, 9.1], [1.53, 9.1, 1.85, 9.1], [1.85, 9.1, 2.7, 9.1, 'd'], [2.7, 9.1, 3.05, 9.1],
       [5.0, 5.75, 5.0, 9.1], [1.53, 10.2, 5.1, 10.2], [5.1, 9.1, 5.1, 10.2, 'dd'],
     ],
@@ -187,7 +186,7 @@ window.FLOORS = [
       { t: 'gate2', x: 6.91, y: -0.03, w: 2.74, d: 0.06 },
       { t: 'fountain2', x: 8.7, y: 3.45, w: 0.85, d: 2.0 },
       { t: 'liftcar', x: 1.77, y: 7.82, w: 1.05, d: 1.1 },
-      { t: 'wc', x: 1.6, y: 6.75, w: 0.4, d: 0.55, face: 'w' }, { t: 'basin', x: 1.6, y: 5.9, w: 0.45, d: 0.5, face: 'w' },
+      { t: 'wc', x: 2.47, y: 6.85, w: 0.4, d: 0.55, face: 'e' }, { t: 'basin', x: 1.6, y: 5.9, w: 0.45, d: 0.5, face: 'w' },
       { t: 'floatsteps', x: 5.15, y: 9.25, w: 1.5, d: 0.8 },
       { t: 'pitbench', x: 1.75, y: 11.6, w: 0.6, d: 2.25, face: 'w', base: -0.45 },
       { t: 'pitbench', x: 2.35, y: 13.25, w: 1.9, d: 0.6, face: 's', base: -0.45 },
@@ -248,13 +247,13 @@ window.FLOORS = [
     orbit: { theta: 0, phi: 0.05 },
     spawn: { from: [4.2, 7.6, 180], to: [4.2, 7.6, 180] },
     slabHoles: [[3.3, 9.15, 6.65, 12.5]],
-    summary: 'A green roof: lawn across the whole terrace and nothing else on it, no benches or tables. The 11 × 11 ft plunge pool is sunk flush into the slab just outside the stair door on the east. A pergola in the architect’s style runs along the west side from the stair-head wall to the parapet: a white roof frame with timber louvres on two white blade columns. Two water tanks sit on the stair-head roof inside a cage of dark vertical rods, and the skylight lights the third floor below.',
+    summary: 'A green roof: lawn across the whole terrace and nothing else on it, no benches or tables. The 11 × 11 ft plunge pool is sunk flush into the slab just outside the stair door on the east. A pergola in the architect’s style runs east–west across the south end: a white roof frame with timber louvres on two white blade columns. Two water tanks sit on the stair-head roof inside a cage of dark vertical rods, and the skylight lights the third floor below.',
     stats: [['Plunge pool', '≈ 11 × 11 ft · 3 ft deep, flush'], ['Flooring', 'Lawn throughout'], ['Water tanks', '2, in a rod screen']],
     rooms: [
       { id: 'tgarden', name: 'Front Lawn', size: '6.75 × 3.75 m', r: [0, 0, 6.75, 3.75], kind: 'lawn', notes: 'Lawn around the skylight that brings daylight into the third-floor bedroom below.', cam: { from: [6.2, 3.4, 1.6], to: [1.4, 1.2, 0.6] } },
       { id: 'tside', name: 'East Lawn', size: '3.25 × 4.50 m', r: [3.5, 3.75, 6.75, 8.25], kind: 'lawn', notes: 'Lawn beside the stair head, with the outdoor shower on the stair-head wall.' },
-      { id: 'tpergola', name: 'Pergola', size: '3.20 × 7.25 m', r: [0, 8.25, 3.2, 15.5], kind: 'lawn', notes: 'The architect’s pergola: a white roof frame filled with timber louvres, flush with the stair-head roof at its north end and carried on two white blade columns at the south. Lawn underneath, with nothing else on it.', cam: { from: [2.9, 15.0, 1.6], to: [1.4, 9.0, 1.9] } },
-      { id: 'teast', name: 'Pool Lawn', size: '3.55 × 7.25 m', r: [3.2, 8.25, 6.75, 15.5], kind: 'lawn', holes: [[3.3, 9.15, 6.65, 12.5]], notes: 'Lawn around the pool and south to the glass parapet.' },
+      { id: 'tpergola', name: 'Pergola', size: '6.75 × 2.90 m', r: [0, 12.6, 6.75, 15.5], kind: 'lawn', notes: 'The architect’s pergola, running east–west across the south end of the terrace: a white roof frame filled with timber louvres, carried on two white blade columns, one at each end. Lawn underneath, with nothing else on it.', cam: { from: [3.4, 9.0, 1.6], to: [3.4, 14.2, 2.2] } },
+      { id: 'teast', name: 'Pool Lawn', size: '6.75 × 4.35 m', r: [0, 8.25, 6.75, 12.6], kind: 'lawn', holes: [[3.3, 9.15, 6.65, 12.5]], notes: 'Lawn around the pool, between the stair head and the pergola.' },
       { id: 'pool', name: 'Plunge Pool', size: '≈ 11 × 11 ft · 0.90 m deep', r: [3.3, 9.15, 6.65, 12.5], kind: 'pool', notes: 'Sunk below the terrace slab where the outdoor dining used to be, so the water is level with the lawn and you step straight down into it. About 11 × 11 ft and 3 ft deep, with a slim marble coping and an underwater warm light.', cam: { from: [4.0, 14.9, 1.7], to: [5.0, 10.8, -0.2] } },
       { id: 'ttoilet', name: 'Toilet', size: '1.23 × 1.70 m', r: [0, 3.75, 1.38, 5.6], kind: 'wet', notes: N.bath },
       { id: 'tlift', name: 'Lift Overrun', size: '3.60 m overhead', r: [0, 5.6, 1.53, 7.1], kind: 'core', notes: 'The lift serves the stilt to the third floor. This is its overrun, inside the stair head.' },
@@ -272,7 +271,7 @@ window.FLOORS = [
       { t: 'wc', x: 0.08, y: 4.9, w: 0.4, d: 0.55, face: 'w' }, { t: 'basin', x: 0.08, y: 3.9, w: 0.45, d: 0.5, face: 'w' },
       { t: 'oshower', x: 3.56, y: 4.1, w: 0.2, d: 0.9, face: 'w' },
       { t: 'poolflush', x: 3.3, y: 9.15, w: 3.35, d: 3.35, depth: 0.9 },
-      { t: 'pergola3', x: 0.12, y: 8.3, w: 3.0, d: 7.08 },
+      { t: 'pergola3', x: 0.12, y: 12.65, w: 6.51, d: 2.73 },
       { t: 'tank', x: 0.45, y: 4.85, w: 1.0, d: 1.0, onRoof: true }, { t: 'tank', x: 1.85, y: 4.85, w: 1.0, d: 1.0, onRoof: true },
       { t: 'tankfins', x: 0.2, y: 4.55, w: 2.95, d: 1.6 },
     ],
