@@ -175,6 +175,28 @@
   function plantModel(g, r, m, tall = 1.25) { g.add(cyl(r * 0.5, 0.42, m.pot, 0, 0, 0, 24, r * 0.6)); g.add(cyl(0.02, tall - 0.5, m.trunk, 0, 0.4, 0, 8)); g.add(blob(r * 0.85, m.leaf, 0, tall - 0.25, 0, 1.15)); g.add(blob(r * 0.6, m.leaf2, r * 0.3, tall + 0.15, -r * 0.15)); g.add(blob(r * 0.5, m.leaf3, -r * 0.3, tall - 0.05, r * 0.25)); }
   function chairModel(m, mat) { const c = new T.Group(); c.add(rbox(0.46, 0.07, 0.46, 0.03, mat, 0, 0.41, 0)); const b = rbox(0.44, 0.42, 0.05, 0.025, mat, 0, 0.5, -0.2); b.rotation.x = -0.1; c.add(b); for (const [a, e] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) { const l = cyl(0.014, 0.42, m.wood, a * 0.19, 0, e * 0.19, 8, 0.018); c.add(l); } return c; }
 
+  /** seated Ganesha murti in brass, facing +x (~0.42 m tall) */
+  function ganesha(m) {
+    const gold = m.idol || (m.idol = new T.MeshStandardMaterial({ color: '#C9A24E', roughness: 0.3, metalness: 0.85 })), g = new T.Group();
+    const sph = (r, x, y, z, sx = 1, sy = 1, sz = 1) => { const s = new T.Mesh(new T.SphereGeometry(r, 24, 16), gold); s.position.set(x, y, z); s.scale.set(sx, sy, sz); s.castShadow = true; g.add(s); return s; };
+    const lotus = new T.Mesh(new T.CylinderGeometry(0.14, 0.11, 0.05, 24), gold); lotus.position.y = 0.025; g.add(lotus);
+    for (let i = 0; i < 12; i++) { const a = (i / 12) * Math.PI * 2; sph(0.035, Math.cos(a) * 0.12, 0.05, Math.sin(a) * 0.12, 1, 0.6, 1); }
+    sph(0.12, 0.01, 0.1, 0, 0.75, 0.38, 1.2);                       // crossed legs
+    sph(0.1, 0.0, 0.18, 0, 0.95, 1.05, 1.0);                        // belly / body
+    sph(0.075, 0.0, 0.31, 0, 1, 1.05, 1);                           // head
+    for (const s of [-1, 1]) { const ear = new T.Mesh(new T.CylinderGeometry(0.07, 0.07, 0.012, 24), gold); ear.rotation.x = Math.PI / 2; ear.scale.set(1, 1, 1.25); ear.position.set(-0.015, 0.31, s * 0.085); ear.rotation.y = s * 0.35; g.add(ear); }
+    const crown = new T.Mesh(new T.ConeGeometry(0.045, 0.1, 16), gold); crown.position.y = 0.42; g.add(crown); sph(0.012, 0, 0.475, 0);
+    const trunk = new T.CatmullRomCurve3([new T.Vector3(0.06, 0.3, 0), new T.Vector3(0.095, 0.24, 0), new T.Vector3(0.1, 0.17, 0.01), new T.Vector3(0.085, 0.13, 0.045), new T.Vector3(0.07, 0.15, 0.07)]);
+    const tm = new T.Mesh(new T.TubeGeometry(trunk, 20, 0.016, 10, false), gold); tm.castShadow = true; g.add(tm);
+    for (const s of [-1, 1]) {
+      const arm = new T.Mesh(new T.CylinderGeometry(0.018, 0.02, 0.16, 10), gold); arm.position.set(0.02, 0.24, s * 0.105); arm.rotation.x = s * -0.5; g.add(arm); sph(0.022, 0.02, 0.32, s * 0.14);  // raised hands
+      sph(0.024, 0.075, 0.16, s * 0.07);                                                                                                            // lower hands
+    }
+    sph(0.03, 0.08, 0.13, -0.02, 1, 0.8, 1);                         // modak
+    const aura = new T.Mesh(new T.TorusGeometry(0.2, 0.012, 8, 40, Math.PI), gold); aura.rotation.y = Math.PI / 2; aura.position.set(-0.07, 0.24, 0); g.add(aura);
+    return g;
+  }
+
   function buildFurn(f, opt = {}) {
     const m = mats(), face = f.face || 'n', swap = face === 'e' || face === 'w';
     let w = swap ? f.d : f.w, d = swap ? f.w : f.d, hw = w / 2, hd = d / 2;
@@ -297,7 +319,7 @@
         g.add(box(0.03, 1.8, d, m.marble, -hw + 0.015, 0.79, 0)); for (let i = 0; i < 12; i++) g.add(cyl(0.035, 1.8, m.ceramic, -hw + 0.06, 0.79, -hd + 0.06 + i * ((d - 0.12) / 11), 10));
         for (const s of [-1, 1]) g.add(box(w, 1.8, 0.04, m.ceramic, 0, 0.79, s * (hd - 0.02)));
         g.add(box(w + 0.06, 0.1, d + 0.06, m.ceramic, 0, 2.59, 0)); g.add(box(w * 0.8, 0.012, d * 0.86, m.glow, 0, 2.578, 0, false));
-        g.add(rbox(0.16, 0.36, 0.22, 0.05, m.brass, -0.03, 0.79, 0)); g.add(box(0.3, 0.03, 0.4, m.brass, 0.02, 0.79, 0));
+        g.add(box(0.3, 0.03, 0.4, m.brass, 0.02, 0.79, 0)); { const gn = ganesha(m); gn.position.set(-0.02, 0.82, 0); g.add(gn); }
         for (const s of [-1, 1]) { g.add(cyl(0.04, 0.02, m.brass, 0.12, 0.79, s * d * 0.3, 14)); g.add(cyl(0.012, 0.035, m.flame, 0.12, 0.81, s * d * 0.3, 8)); }
         const bell = new T.Group(); bell.userData.stay = true; bell.position.set(0.1, 1.75, 0); g.add(bell); if (!lite) useModel(bell, 'brass_diya_lantern', { h: 0.8 });
         g.userData.light = { y: 2.1, color: '#FFCF8A', i: 4 };
