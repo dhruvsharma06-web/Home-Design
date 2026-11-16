@@ -6,8 +6,8 @@
   const H = 2.9, SLAB = 0.3;
   const ROT = { n: 0, s: Math.PI, e: -Math.PI / 2, w: Math.PI / 2 };
   const MOVABLE = new Set(['bed', 'nightstand', 'armchair', 'lounge', 'sofa', 'coffee', 'rug', 'dining', 'stool', 'chair', 'desk', 'bench', 'plant', 'floorlamp', 'sidetable', 'lounger', 'aasan', 'verna', 'boulder', 'tv']);
-  const NOCOLLIDE = new Set(['shower', 'loft', 'planterhole', 'tankfins', 'pergola3', 'rug', 'aasan', 'curtain', 'stepstones', 'tankcover', 'vineplanter', 'fins', 'screen', 'pergola', 'tank', 'pitsteps', 'floatsteps', 'shearwall', 'gate', 'oshower', 'skylight']);
-  const FACADE = new Set(['gate2', 'gatepillar', 'fountain2', 'vgarden', 'planterhole', 'pittable', 'pergola3', 'tankfins', 'vineplanter', 'fins', 'planter', 'pergola', 'poolflush', 'skylight', 'verna', 'gate', 'palm', 'shrub', 'bamboo', 'shearwall', 'fountain', 'greenwall', 'boulder', 'stepstones', 'tank', 'pitbench', 'firetable', 'pitsteps', 'screen', 'lounger', 'bench', 'floatsteps', 'tankcover', 'onyx', 'curtain', 'sofa', 'bed', 'dining', 'tv', 'armchair', 'wardrobe', 'counter', 'island', 'tall', 'mandir', 'lounge', 'coffee', 'rug', 'floorlamp', 'plant', 'sidetable', 'nightstand', 'desk', 'chair', 'fridge', 'stool']);
+  const NOCOLLIDE = new Set(['rodscreen', 'post', 'shower', 'loft', 'planterhole', 'tankfins', 'pergola3', 'rug', 'aasan', 'curtain', 'stepstones', 'tankcover', 'vineplanter', 'fins', 'screen', 'pergola', 'tank', 'pitsteps', 'floatsteps', 'shearwall', 'gate', 'oshower', 'skylight']);
+  const FACADE = new Set(['rodscreen', 'post', 'gate2', 'gatepillar', 'fountain2', 'vgarden', 'planterhole', 'pittable', 'pergola3', 'tankfins', 'vineplanter', 'fins', 'planter', 'pergola', 'poolflush', 'skylight', 'verna', 'gate', 'palm', 'shrub', 'bamboo', 'shearwall', 'fountain', 'greenwall', 'boulder', 'stepstones', 'tank', 'pitbench', 'firetable', 'pitsteps', 'screen', 'lounger', 'bench', 'floatsteps', 'tankcover', 'onyx', 'curtain', 'sofa', 'bed', 'dining', 'tv', 'armchair', 'wardrobe', 'counter', 'island', 'tall', 'mandir', 'lounge', 'coffee', 'rug', 'floorlamp', 'plant', 'sidetable', 'nightstand', 'desk', 'chair', 'fridge', 'stool']);
   const roomPts = (r) => r.poly || [[r.r[0], r.r[1]], [r.r[2], r.r[1]], [r.r[2], r.r[3]], [r.r[0], r.r[3]]];
   const rectPts = (r) => [[r[0], r[1]], [r[2], r[1]], [r[2], r[3]], [r[0], r[3]]];
   const bbox = (pts) => { const xs = pts.map((p) => p[0]), ys = pts.map((p) => p[1]); return [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)]; };
@@ -70,6 +70,7 @@
       beige: tx('#DCCCAA', { roughness: 0.85 }, { n: 'stone_n.jpg' }, 1.5),
       stairBeige: tx('#DDD0B8', { roughness: 0.6 }, { c: 'stone_c.jpg', n: 'stone_n.jpg' }, 1.2),
       shineGrey: std('#8D9095', { roughness: 0.45, metalness: 0.35 }),
+      rod: std('#4B4E52', { roughness: 0.4, metalness: 0.55 }),
       pillar: std('#ADA69C', { roughness: 0.85 }),
       statuario: tx('#F4F2EE', { roughness: 0.22 }, { c: 'marble_c.jpg', n: 'marble_n.jpg' }, 2.4),
       frosted: new T.MeshPhysicalMaterial({ color: '#F4F4F2', transparent: true, opacity: 0.72, roughness: 0.55, metalness: 0, side: T.DoubleSide, depthWrite: false }),
@@ -349,22 +350,25 @@
       case 'pitsteps': g.add(box(w, 0.15, d, m.marble, 0, 0, 0)); g.add(box(w, 0.3, d / 2, m.marble, 0, 0, -d / 4)); break;
       case 'pittable': g.add(box(w, 0.28, d, m.marble, 0, 0, 0)); break;
       case 'gatepillar': g.add(box(w, 1.6, d, m.shineGrey, 0, 0, 0)); break;
-      case 'gate2': {                                                                       // two 4.5 ft metal gates, Shine Grey
-        const lw = w / 2;
-        for (const s of [-1, 1]) { const cx = s * lw / 2; g.add(box(lw - 0.02, 0.06, 0.06, m.shineGrey, cx, 0.08, 0)); g.add(box(lw - 0.02, 0.06, 0.06, m.shineGrey, cx, 1.44, 0)); for (const e of [-1, 1]) g.add(box(0.06, 1.42, 0.06, m.shineGrey, cx + e * (lw / 2 - 0.04), 0.08, 0)); for (let x = -lw / 2 + 0.12; x < lw / 2 - 0.08; x += 0.11) g.add(box(0.025, 1.36, 0.03, m.shineGrey, cx + x, 0.11, 0)); }
+      case 'gate2': {                                                                       // architect's gate: two 4.5 ft leaves, each two louvred panels in Shine Grey
+        const lw = w / 2, pw = lw / 2, gh = 1.6;
+        for (let k = 0; k < 4; k++) { const cx = -hw + pw * (k + 0.5);
+          for (const e of [-1, 1]) g.add(box(0.05, gh, 0.07, m.shineGrey, cx + e * (pw / 2 - 0.025), 0.05, 0));
+          g.add(box(pw, 0.06, 0.07, m.shineGrey, cx, 0.05, 0)); g.add(box(pw, 0.06, 0.07, m.shineGrey, cx, gh - 0.01, 0));
+          for (let y = 0.16; y < gh - 0.05; y += 0.085) { const l = box(pw - 0.09, 0.05, 0.012, m.shineGrey, cx, y, 0); l.rotation.x = 0.55; g.add(l); } }
         break;
       }
-      case 'fountain2': {                                                                   // wall fountain: stone back wall on the boundary (+x), spout, water sheet into a marble basin
-        g.add(box(w, 0.45, d, m.marble, 0, 0, 0)); g.add(box(w - 0.14, 0.02, d - 0.14, m.water, 0, 0.42, 0, false));
-        g.add(box(0.2, 1.6, d, m.beige, hw - 0.1, 0.45, 0));
-        g.add(box(0.16, 0.03, d * 0.6, m.steel, hw - 0.28, 1.28, 0));
-        g.add(box(0.012, 0.83, d * 0.58, m.water, hw - 0.35, 0.45, 0, false));
-        g.add(box(0.03, 0.02, d * 0.8, m.glow, hw - 0.22, 0.46, 0, false));
-        g.userData.light = { y: 0.7, x: -0.1, color: '#FFE2B8', i: 2 }; break;
-      }
-      case 'vgarden': {                                                                     // vertical garden panel, greenery on both faces
-        g.add(box(w, 2.6, d * 0.5, m.dark, 0, 0, 0));
-        for (let r = 0; r < 8; r++) for (let c = 0; c < Math.max(2, Math.round(w / 0.3)); c++) for (const s of [-1, 1]) g.add(blob(0.15, (r + c) % 3 ? m.leaf : m.leaf2, -hw + 0.15 + c * ((w - 0.3) / Math.max(1, Math.round(w / 0.3) - 1)), 0.25 + r * 0.31, s * d * 0.45, 0.9));
+      case 'fountain2': {                                                                   // two-tier cascade: fluted stone wall on the boundary (+x), brass spout, upper basin spilling into a low marble pool
+        const uw = w * 0.42, ux = hw - 0.12 - uw / 2;
+        g.add(box(w, 0.35, d, m.marble, 0, 0, 0)); g.add(box(w - 0.14, 0.02, d - 0.14, m.water, 0, 0.33, 0, false));
+        g.add(box(uw, 0.55, d * 0.7, m.marble, ux, 0.33, 0)); g.add(box(uw - 0.1, 0.02, d * 0.7 - 0.1, m.water, ux, 0.86, 0, false));
+        g.add(box(0.006, 0.52, d * 0.5, m.sheet || (m.sheet = new T.MeshPhysicalMaterial({ color: '#CFEDEF', transparent: true, opacity: 0.32, roughness: 0.05, depthWrite: false })), ux - uw / 2 - 0.012, 0.35, 0, false));
+        g.add(box(0.12, 1.9, d, m.beige, hw - 0.06, 0.35, 0));
+        for (let i = 0; i < Math.round(d / 0.1); i++) g.add(cyl(0.03, 1.9, m.beige, hw - 0.13, 0.35, -hd + 0.05 + i * 0.1, 8));
+        g.add(cyl(0.025, 0.2, m.brass, hw - 0.25, 1.55, 0, 12)); g.children[g.children.length - 1].rotation.z = Math.PI / 2;
+        g.add(box(0.008, 0.66, 0.03, m.sheet, hw - 0.35, 0.88, 0, false));
+        g.add(box(0.03, 0.02, d * 0.85, m.glow, -hw + 0.1, 0.34, 0, false)); g.add(box(0.03, 0.02, d * 0.6, m.glow, ux - uw / 2 + 0.06, 0.87, 0, false));
+        g.userData.light = { y: 1.1, x: -0.35, color: '#FFE2B8', i: 1.2 };
         break;
       }
       case 'planterhole': {                                                                 // flush planter cut-out in the stilt floor, low ground cover
@@ -372,6 +376,14 @@
         const n = Math.max(2, Math.round(d / 0.3)); for (let i = 0; i < n; i++) for (let j = 0; j < 2; j++) g.add(blob(0.13, (i + j) % 2 ? m.leaf : m.leaf2, -hw / 2 + j * hw, 0.08, -hd + 0.15 + i * ((d - 0.3) / Math.max(1, n - 1)), 0.55));
         break;
       }
+      case 'rodscreen': {                                                                   // architect's long-face screen: dark vertical rods, floor to floor, with denser bands
+        const bands = [[0.18, 0.26], [0.47, 0.53], [0.74, 0.8]];
+        for (let z = -hd; z <= hd + 0.001; z += 0.05) { const t = (z + hd) / d, dense = bands.some(([a, c]) => t >= a && t <= c);
+          if (!dense && Math.round((z + hd) / 0.05) % 2) continue; g.add(box(0.03, H + SLAB, dense ? 0.035 : 0.025, m.rod, 0, -SLAB, z, false)); }
+        for (const y of [-SLAB + 0.02, H - 0.06]) g.add(box(0.06, 0.05, d, m.rod, 0, y, 0, false));
+        break;
+      }
+      case 'post': g.add(box(w, (f.h || H + SLAB), d, m.wall, 0, f.h ? 0 : -SLAB, 0)); break;   // white façade frame post
       case 'jacuzzi': {
         g.add(rbox(w, 0.58, d, 0.08, m.ceramic, 0, 0, 0)); g.add(rbox(w - 0.16, 0.02, d - 0.16, 0.06, m.water, 0, 0.5, 0));
         for (const s of [-1, 1]) g.add(cyl(0.025, 0.02, m.steel, s * w * 0.3, 0.52, -hd + 0.1, 12)); g.add(cyl(0.012, 0.3, m.steel, -hw + 0.12, 0.58, 0, 8));
@@ -382,16 +394,18 @@
         g.add(box(0.004, H - 2.22, 0.004, m.dark, 0, 2.2, hd + 0.001, false));
         break;
       }
-      case 'pergola3': {                                                                    // fixed to the stair-head wall at its north end; three posts
-        for (const [x, z] of [[hw - 0.06, -hd + 3.4], [hw - 0.06, hd - 0.06], [-hw + 0.06, hd - 0.06]]) g.add(box(0.12, 2.6, 0.12, m.fins, x, 0, z));
-        for (const s of [-1, 1]) { g.add(box(w, 0.18, 0.12, m.fins, 0, 2.6, s * (hd - 0.06))); g.add(box(0.12, 0.18, d, m.fins, s * (hw - 0.06), 2.6, 0)); }
-        for (let z = -hd + 0.15; z < hd; z += 0.22) g.add(box(w - 0.1, 0.12, 0.045, m.fins, 0, 2.66, z));
+      case 'pergola3': {                                                                    // architect's pergola: white roof frame with timber louvres on two white blade columns (south), flush with the stair-head roof (north)
+        const yb = H + SLAB - 0.3;
+        for (const s of [-1, 1]) g.add(box(0.9, yb, 0.25, m.wall, s * (hw - 0.45), 0, hd - 0.125));
+        for (const s of [-1, 1]) { g.add(box(w, 0.3, 0.25, m.wall, 0, yb, s * (hd - 0.125))); g.add(box(0.25, 0.3, d, m.wall, s * (hw - 0.125), yb, 0)); }
+        for (let z = -hd + 0.4; z < hd - 0.25; z += 0.2) g.add(box(w - 0.5, 0.2, 0.05, m.fins, 0, yb + 0.05, z));
         break;
       }
-      case 'tankfins': {                                                                    // horizontal timber louvres round the two tanks, just above tank height
-        const y0 = H + SLAB, fh = 1.4;
-        for (const [x, z] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) g.add(box(0.08, fh, 0.08, m.fins, x * (hw - 0.04), y0, z * (hd - 0.04)));
-        for (let y = y0 + 0.1; y < y0 + fh; y += 0.15) { g.add(box(w, 0.05, 0.14, m.fins, 0, y, -hd + 0.07)); g.add(box(w, 0.05, 0.14, m.fins, 0, y, hd - 0.07)); g.add(box(0.14, 0.05, d, m.fins, -hw + 0.07, y, 0)); g.add(box(0.14, 0.05, d, m.fins, hw - 0.07, y, 0)); }
+      case 'tankfins': {                                                                    // architect's tank screen: dark vertical rods round the two tanks, with a top frame
+        const y0 = H + SLAB, fh = 1.7;
+        for (let x = -hw; x <= hw + 0.001; x += 0.12) { g.add(box(0.03, fh, 0.03, m.rod, x, y0, -hd)); g.add(box(0.03, fh, 0.03, m.rod, x, y0, hd)); }
+        for (let z = -hd + 0.12; z < hd - 0.06; z += 0.12) { g.add(box(0.03, fh, 0.03, m.rod, -hw, y0, z)); g.add(box(0.03, fh, 0.03, m.rod, hw, y0, z)); }
+        for (const s of [-1, 1]) { g.add(box(w + 0.04, 0.05, 0.05, m.rod, 0, y0 + fh, s * hd)); g.add(box(0.05, 0.05, d + 0.04, m.rod, s * hw, y0 + fh, 0)); }
         break;
       }
       case 'skylight': g.add(box(w + 0.24, 0.3, 0.12, m.wall, 0, 0, -hd)); g.add(box(w + 0.24, 0.3, 0.12, m.wall, 0, 0, hd)); g.add(box(0.12, 0.3, d, m.wall, -hw, 0, 0)); g.add(box(0.12, 0.3, d, m.wall, hw, 0, 0)); g.add(box(w, 0.02, d, m.glass, 0, 0.3, 0, false)); break;

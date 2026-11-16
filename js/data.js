@@ -56,7 +56,7 @@ const CORE = {
     // south
     [0, 15.5, 3.42, 15.5, 'g'], [3.42, 15.5, 6.75, 15.5, 'r'],
     // kitchen → balcony: door on the right as you face the balcony (west end), windows for the rest
-    [3.42, 13.85, 3.5, 13.85], [3.5, 13.85, 4.4, 13.85, 'd'], [4.4, 13.85, 6.75, 13.85, 'win', { s: 0.9, h: 2.4 }],
+    [3.42, 13.85, 3.5, 13.85], [3.5, 13.85, 4.4, 13.85, 'd'], [4.4, 13.85, 6.75, 13.85, 'g'],
   ],
   furn: [
     { t: 'wc', x: 0.08, y: 4.85, w: 0.4, d: 0.55, face: 'w' }, { t: 'basin', x: 0.08, y: 3.9, w: 0.45, d: 0.5, face: 'w' }, { t: 'shower', x: 0.62, y: 4.72, w: 0.72, d: 0.84 },
@@ -74,7 +74,11 @@ const CORE = {
     // balcony
     { t: 'lounge', x: 4.75, y: 14.1, w: 0.72, d: 0.72, face: 's' }, { t: 'lounge', x: 5.92, y: 14.1, w: 0.72, d: 0.72, face: 's' }, { t: 'sidetable', x: 5.5, y: 14.25, w: 0.4, d: 0.4 },
     // façade: 5 full-height fins at the north-west corner; one 75%-height fin panel per floor on the east face, up to the window
-    { t: 'fins', x: 6.8, y: 2.35, w: 0.4, d: 1.5, h75: true }, { t: 'fins', x: -0.42, y: 0.2, w: 0.4, d: 1.0 },
+    { t: 'fins', x: -0.42, y: 0.2, w: 0.4, d: 1.0 },
+    { t: 'rodscreen', x: 7.05, y: 2.45, w: 0.1, d: 13.35 },
+    { t: 'post', x: -0.42, y: -0.42, w: 0.18, d: 0.18 }, { t: 'post', x: 6.99, y: -0.42, w: 0.18, d: 0.18 },
+    { t: 'post', x: -0.42, y: 15.74, w: 0.18, d: 0.18 }, { t: 'post', x: 6.99, y: 15.74, w: 0.18, d: 0.18 },
+    { t: 'post', x: 2.18, y: -0.42, w: 0.18, d: 0.18 }, { t: 'post', x: 3.46, y: -0.42, w: 0.18, d: 0.18 },
     // storage lofts at 7 ft over the washrooms
     { t: 'loft', x: 0.0, y: 3.75, w: 1.38, d: 1.85 }, { t: 'loft', x: 0.0, y: 8.15, w: 2.5, d: 1.15 },
   ],
@@ -160,16 +164,16 @@ window.FLOORS = [
     slabHoles: [[1.75, 11.15, 4.85, 13.85]],
     rooms: [
       { id: 'court', name: 'North Arrival Court', size: '9.75 × 5.75 m', r: [0, 0, 9.75, 5.75], kind: 'pave', notes: 'Beige stone paving from the gates. The 12,750 litre underground water tank sits below the court.', cam: { from: [8.9, 0.9, 1.6], to: [3.4, 4.6, 0.8] } },
-      { id: 'water', name: 'Fountain', size: 'North-east corner', r: [8.55, 3.3, 9.65, 5.6], kind: 'pave', notes: 'A wall fountain in the north-east arrival corner, the water feature named in the B4 documents: a beige stone back wall against the boundary, a steel spout and a sheet of water falling into a low marble basin, lit warm from below.', cam: { from: [7.2, 5.7, 1.6], to: [9.1, 4.4, 0.6] } },
+      { id: 'water', name: 'Fountain', size: 'North-east corner', r: [8.55, 3.3, 9.65, 5.6], kind: 'pave', notes: 'A two-tier cascade fountain in the north-east arrival corner, the water feature named in the B4 documents. A brass spout in a fluted beige stone wall fills a raised upper basin, whose water spills as a thin sheet into a long, low marble pool lit warm from below.', cam: { from: [7.2, 5.7, 1.6], to: [9.1, 4.4, 0.6] } },
       { id: 'passage', name: 'East Walk', size: '3.15 m wide', r: [5.1, 5.75, 9.75, 10.2], kind: 'out', notes: 'Beige stone walk from the arrival court, past the open lift lobby, to the conversation pit and the lawn.' },
       { id: 'westwalk', name: 'West Strip', size: '1.50 m wide', r: [0, 5.75, 1.53, 10.2], kind: 'lawn', notes: 'A plain lawn strip along the west boundary.' },
       { id: 'gtoilet', name: 'Toilet', size: '1.23 × 1.70 m', r: [1.53, 5.75, 2.93, 7.6], kind: 'wet', notes: N.bath },
       { id: 'glift', name: 'Lift', size: '1.10 × 1.20 m shaft', r: [1.53, 7.6, 3.05, 9.1], kind: 'core', notes: N.lift },
       { id: 'gstair', name: 'Staircase', size: 'Light beige stone', r: [3.05, 5.75, 5.0, 9.1], kind: 'stair', notes: N.stair },
       { id: 'globby', name: 'Lift Lobby', size: '+0.90 m', r: [1.53, 9.1, 5.1, 10.2], kind: 'core', notes: 'The entry into the house: a pair of Shine Grey metal doors on the east side of the lift lobby, opening out to the stilt. Inside are the lift and the stair.' },
-      { id: 'pavilion', name: 'Pavilion Deck', size: 'Beige stone', r: [1.53, 10.2, 9.75, 14.3], kind: 'out', holes: [[1.75, 11.15, 4.85, 13.85]], notes: 'The covered heart of the stilt in beige stone. The columns are greige up to the first slab, and two flush planter beds sit in the floor along the east edge.' },
+      { id: 'pavilion', name: 'Pavilion Deck', size: 'Beige stone', r: [1.53, 10.2, 9.75, 14.3], kind: 'out', holes: [[1.75, 11.15, 4.85, 13.85]], notes: 'The covered heart of the stilt in beige stone. The columns are greige up to the first slab.' },
       { id: 'pit', name: 'Conversation Pit', size: '3.10 × 2.70 m · 1.5 ft sunken', r: [1.75, 11.15, 4.85, 13.85], kind: 'pit', notes: 'Sunk 1.5 ft below the stilt floor and finished entirely in marble: floor, sides, steps and flush built-in seats with a thin cushion, so nothing rises above the stilt floor. A low marble table sits in the centre. The core wall beside it is plain white.', cam: { from: [5.6, 13.9, 1.5], to: [3.0, 11.6, 0.3] } },
-      { id: 'garden', name: 'South Lawn', size: '≈ 500 sq ft', r: [0, 14.3, 9.75, 19.0], kind: 'lawn', notes: 'A plain lawn opening to the club side. Vertical gardens flank the middle column. The boundary here is a 1.5 ft wall with glass above.', cam: { from: [9.2, 16.4, 1.6], to: [3.0, 15.2, 1.0] } },
+      { id: 'garden', name: 'South Lawn', size: '≈ 500 sq ft', r: [0, 14.3, 9.75, 19.0], kind: 'lawn', notes: 'A plain lawn opening to the club side. The boundary here is a 1.5 ft wall with glass above.', cam: { from: [9.2, 16.4, 1.6], to: [3.0, 15.2, 1.0] } },
       { id: 'weststrip', name: 'West Strip', size: 'Lawn', r: [0, 10.2, 1.53, 14.3], kind: 'lawn', notes: 'A plain lawn strip beside the conversation pit.' },
     ],
     walls: [
@@ -185,7 +189,6 @@ window.FLOORS = [
       { t: 'gatepillar', x: 6.46, y: -0.12, w: 0.45, d: 0.45 },
       { t: 'gate2', x: 6.91, y: -0.03, w: 2.74, d: 0.06 },
       { t: 'fountain2', x: 8.7, y: 3.45, w: 0.85, d: 2.0 },
-      { t: 'tankcover', x: 1.6, y: 0.6, w: 0.7, d: 0.7 }, { t: 'tankcover', x: 5.9, y: 0.6, w: 0.7, d: 0.7 },
       { t: 'liftcar', x: 1.77, y: 7.82, w: 1.05, d: 1.1 },
       { t: 'wc', x: 1.6, y: 6.75, w: 0.4, d: 0.55, face: 'w' }, { t: 'basin', x: 1.6, y: 5.9, w: 0.45, d: 0.5, face: 'w' },
       { t: 'floatsteps', x: 5.15, y: 9.25, w: 1.5, d: 0.8 },
@@ -194,9 +197,6 @@ window.FLOORS = [
       { t: 'pitbench', x: 4.25, y: 11.6, w: 0.6, d: 2.25, face: 'e', base: -0.45 },
       { t: 'pittable', x: 2.75, y: 12.0, w: 1.1, d: 0.6, base: -0.45 },
       { t: 'pitsteps', x: 2.6, y: 11.15, w: 1.4, d: 0.45, base: -0.45 },
-      { t: 'vgarden', x: 3.93, y: 14.65, w: 0.9, d: 0.2 }, { t: 'vgarden', x: 5.28, y: 14.65, w: 0.9, d: 0.2 },
-      { t: 'planterhole', x: 5.3, y: 5.95, w: 0.61, d: 0.61 }, { t: 'planterhole', x: 5.3, y: 8.4, w: 0.61, d: 0.61 },
-      { t: 'planterhole', x: 8.95, y: 11.0, w: 0.61, d: 1.22 }, { t: 'planterhole', x: 8.95, y: 12.7, w: 0.61, d: 1.22 },
     ],
   },
 
@@ -251,12 +251,12 @@ window.FLOORS = [
     orbit: { theta: 0, phi: 0.05 },
     spawn: { from: [4.2, 7.6, 180], to: [4.2, 7.6, 180] },
     slabHoles: [[3.3, 9.15, 6.65, 12.5]],
-    summary: 'A green roof: lawn across the whole terrace and nothing else on it, no benches or tables. The 11 × 11 ft plunge pool is sunk flush into the slab just outside the stair door on the east. A large three-post pergola runs along the west side from the stair-head wall to the parapet. Two water tanks sit on the stair-head roof behind a screen of fins, and the skylight lights the third floor below.',
-    stats: [['Plunge pool', '≈ 11 × 11 ft · 3 ft deep, flush'], ['Flooring', 'Lawn throughout'], ['Water tanks', '2, screened by fins']],
+    summary: 'A green roof: lawn across the whole terrace and nothing else on it, no benches or tables. The 11 × 11 ft plunge pool is sunk flush into the slab just outside the stair door on the east. A pergola in the architect’s style runs along the west side from the stair-head wall to the parapet: a white roof frame with timber louvres on two white blade columns. Two water tanks sit on the stair-head roof inside a cage of dark vertical rods, and the skylight lights the third floor below.',
+    stats: [['Plunge pool', '≈ 11 × 11 ft · 3 ft deep, flush'], ['Flooring', 'Lawn throughout'], ['Water tanks', '2, in a rod screen']],
     rooms: [
       { id: 'tgarden', name: 'Front Lawn', size: '6.75 × 3.75 m', r: [0, 0, 6.75, 3.75], kind: 'lawn', notes: 'Lawn around the skylight that brings daylight into the third-floor bedroom below.', cam: { from: [6.2, 3.4, 1.6], to: [1.4, 1.2, 0.6] } },
       { id: 'tside', name: 'East Lawn', size: '3.25 × 4.50 m', r: [3.5, 3.75, 6.75, 8.25], kind: 'lawn', notes: 'Lawn beside the stair head, with the outdoor shower on the stair-head wall.' },
-      { id: 'tpergola', name: 'Pergola', size: '3.20 × 7.25 m', r: [0, 8.25, 3.2, 15.5], kind: 'lawn', notes: 'A large slatted pergola on three posts, fixed to the stair-head wall at its north end and running south to the parapet. Lawn underneath, with nothing else on it.', cam: { from: [2.9, 15.0, 1.6], to: [1.4, 9.0, 1.9] } },
+      { id: 'tpergola', name: 'Pergola', size: '3.20 × 7.25 m', r: [0, 8.25, 3.2, 15.5], kind: 'lawn', notes: 'The architect’s pergola: a white roof frame filled with timber louvres, flush with the stair-head roof at its north end and carried on two white blade columns at the south. Lawn underneath, with nothing else on it.', cam: { from: [2.9, 15.0, 1.6], to: [1.4, 9.0, 1.9] } },
       { id: 'teast', name: 'Pool Lawn', size: '3.55 × 7.25 m', r: [3.2, 8.25, 6.75, 15.5], kind: 'lawn', holes: [[3.3, 9.15, 6.65, 12.5]], notes: 'Lawn around the pool and south to the glass parapet.' },
       { id: 'pool', name: 'Plunge Pool', size: '≈ 11 × 11 ft · 0.90 m deep', r: [3.3, 9.15, 6.65, 12.5], kind: 'pool', notes: 'Sunk below the terrace slab where the outdoor dining used to be, so the water is level with the lawn and you step straight down into it. About 11 × 11 ft and 3 ft deep, with a slim marble coping and an underwater warm light.', cam: { from: [4.0, 14.9, 1.7], to: [5.0, 10.8, -0.2] } },
       { id: 'ttoilet', name: 'Toilet', size: '1.23 × 1.70 m', r: [0, 3.75, 1.38, 5.6], kind: 'wet', notes: N.bath },
@@ -276,6 +276,8 @@ window.FLOORS = [
       { t: 'oshower', x: 3.56, y: 4.1, w: 0.2, d: 0.9, face: 'w' },
       { t: 'poolflush', x: 3.3, y: 9.15, w: 3.35, d: 3.35, depth: 0.9 },
       { t: 'pergola3', x: 0.12, y: 8.3, w: 3.0, d: 7.08 },
+      { t: 'post', x: -0.42, y: -0.42, w: 0.18, d: 0.18, h: 1.4 }, { t: 'post', x: 6.99, y: -0.42, w: 0.18, d: 0.18, h: 1.4 },
+      { t: 'post', x: -0.42, y: 15.74, w: 0.18, d: 0.18, h: 1.4 }, { t: 'post', x: 6.99, y: 15.74, w: 0.18, d: 0.18, h: 1.4 },
       { t: 'tank', x: 0.45, y: 4.85, w: 1.0, d: 1.0, onRoof: true }, { t: 'tank', x: 1.85, y: 4.85, w: 1.0, d: 1.0, onRoof: true },
       { t: 'tankfins', x: 0.2, y: 4.55, w: 2.95, d: 1.6 },
     ],
