@@ -122,11 +122,11 @@ const EAST = (dbl, fr) => [
 
 // living, first floor: free-standing sofa facing the TV on the solid east wall (keeps the Bedroom 1 door clear)
 const LIVING_F1 = [
-  { t: 'rug', x: 4.1, y: 2.2, w: 2.1, d: 2.3 },
-  { t: 'sofa', x: 4.15, y: 2.25, w: 0.92, d: 2.2, face: 'w' },
-  { t: 'coffee', x: 5.27, y: 2.85, w: 0.5, d: 1.0 },
-  { t: 'tv', x: 6.27, y: 2.35, w: 0.42, d: 1.55, face: 'e' },
-  { t: 'floorlamp', x: 6.3, y: 1.9, w: 0.35, d: 0.35 },
+  { t: 'rug', x: 4.0, y: 3.5, w: 2.3, d: 2.1 },
+  { t: 'tv', x: 3.48, y: 3.85, w: 0.42, d: 1.5, face: 'w' },
+  { t: 'sofa', x: 5.75, y: 3.5, w: 0.92, d: 2.05, face: 'e' },
+  { t: 'coffee', x: 4.65, y: 4.0, w: 0.6, d: 1.05 },
+  { t: 'floorlamp', x: 6.3, y: 2.95, w: 0.35, d: 0.35 },
 ];
 // living, second floor: sofa facing the TV wall on the north side, armchair against the east wall
 const LIVING_F2 = [
@@ -205,7 +205,7 @@ window.FLOORS = [
     stats: [['Footprint', '6.75 × 15.50 m'], ['Bedrooms', '2'], ['Mandir', 'North-east corner']],
     rooms: [
       { id: 'bed1', name: 'Bedroom 1', size: '3.20 × 3.60 m', r: [0, 0, 3.42, 3.75], kind: '', notes: 'North-west bedroom with the 1.0 m enclosed balcony zone along the front glass as a window seat. Upholstered bed facing a TV on the east wall, a 1.5 ft deep wardrobe on the south wall, sheer curtains, and its own bath.', cam: { from: [3.0, 3.3, 1.5], to: [0.9, 1.2, 0.9] } },
-      { id: 'living', name: 'Living', size: '3.10 × 4.92 m', poly: [[3.42, 0], [5.3, 0], [5.3, 1.75], [6.75, 1.75], [6.75, 5.6], [3.42, 5.6]], label: [4.9, 3.6], kind: '', notes: 'Spanish Beige marble underfoot and warm white walls. A sofa faces the TV on the solid stretch of the east wall, set forward so the Bedroom 1 door stays clear. Light comes from the north glazing and a warm cove.', cam: { from: [3.75, 2.0, 1.55], to: [6.3, 3.6, 1.0] } },
+      { id: 'living', name: 'Living', size: '3.10 × 4.92 m', poly: [[3.42, 0], [5.3, 0], [5.3, 1.75], [6.75, 1.75], [6.75, 5.6], [3.42, 5.6]], label: [4.9, 3.6], kind: '', notes: 'Spanish Beige marble underfoot and warm white walls. The sofa sits with its back to the east window, facing a TV on the west wall, clear of the Bedroom 1 door. Light comes from the north glazing and a warm cove.', cam: { from: [3.75, 2.0, 1.55], to: [6.3, 3.6, 1.0] } },
       { id: 'mandir', name: 'Mandir', size: 'North-east corner', r: [5.3, 0, 6.75, 1.75], kind: '', notes: 'In the north-east corner of the first floor. A white marble shrine stands on the east wall, so you face east in prayer. It has a fluted stone back panel with a warm concealed light and a brass diya ledge. There are no partition walls: it stays open to the living room on the west, with a single clear glass panel on its south side.', cam: { from: [5.45, 1.35, 1.45], to: [6.45, 0.9, 1.15] } },
       { id: 'dining', name: 'Dining', size: '3.10 × 3.75 m', r: [3.42, 5.6, 6.75, 9.35], kind: '', notes: 'A six-seat dining table set against the east window, between living and kitchen, under a slim linear pendant. The residence door from the lobby opens here.', cam: { from: [4.0, 9.1, 1.5], to: [5.7, 6.9, 0.8] } },
       { id: 'kitchen', name: 'Kitchen + Dining', size: '3.10 × 4.50 m', r: [3.42, 9.35, 6.75, 13.85], label: [4.7, 12.3], kind: '', notes: N.kitchen + ' Built to the Godrej drawing for this floor: a 3.0 m run on the east wall with a 1.2 m return facing the dining table, in matt grey. The balcony door is on the right as you face the balcony, at the west end of the back wall, with windows across the rest.', cam: { from: [5.0, 13.55, 1.5], to: [6.2, 10.4, 0.9] } },
